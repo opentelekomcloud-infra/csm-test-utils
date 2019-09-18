@@ -97,8 +97,15 @@ func (cl client) checkMultiple() {
 	}
 }
 
+func Run(address string, count int) {
+	cl := newClient(address)
+	cl.getRootNTimes(count)
+	cl.checkMultiple()
+	cl.checkEquallyBalanced()
+}
+
 func main() {
-	cl := newClient(os.Args[1])
+
 	if len(os.Args) == 1 {
 		log.Panic("Server address argument is missing")
 	}
@@ -107,9 +114,8 @@ func main() {
 	if len(os.Args) > 2 {
 		count, _ = strconv.Atoi(os.Args[2])
 	} else {
-		count = 100
+		count = 1000
 	}
-	cl.getRootNTimes(count)
-	cl.checkMultiple()
-	cl.checkEquallyBalanced()
+	Run(os.Args[1], count)
+
 }
