@@ -1,6 +1,6 @@
 # Customer Service Monitoring test utils
 
-This repository contains set of simple utils for testing of CSM-created infrasctucture
+This repository contains set of simple Go-based utils for testing of CSM-created infrasctucture
 
 ### Why use Go for tests?
 
