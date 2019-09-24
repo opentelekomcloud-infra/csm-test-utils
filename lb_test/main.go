@@ -29,14 +29,19 @@ func (cl client) get(uri string) (*http.Response, error) {
 }
 
 func (cl client) singleGetRoot(wg *sync.WaitGroup) {
-	defer wg.Done()
-	response, _ := cl.get("")
 	defer func() {
-		if recover() != nil {
-			fmt.Println("RECOVER")
+		if r := recover(); r != nil {
+			fmt.Println(r)
 		}
+		wg.Done()
 	}()
+	response, err := cl.get("")
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	srv := response.Header["Server"][0]
+	_ = response.Body.Close()
 	if srv == "" {
 		log.Panic("Missing `Server` header in response")
 	}
