@@ -17,3 +17,16 @@ But in some cases *go* works several times faster and code seems to be simplier.
 Go on client is not required**
 
 *Language by default to be used for tests is still Python 3.6+*
+
+### Usage
+
+This repo to contain multiple tests
+
+#### Load Balancer Test
+Usage:
+
+`load_balancer_test <remote_ip> [request count]`
+
+e.g.
+
+`load_balancer_test 80.158.33.113 1000`
