@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "csm-test-utils"
+version = "0.1.0"
+description = "Utils for testing infructructure created by csm-sandbox"
+authors = ["OTC customer service monitroing team"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+ocomone = "^0.3.1"
+requests = "^2.22"
+influx_line_protocol = "^0.1.3"
+wrapt = "^1.11.2"
+PyYAML = "^5.1.2"
+botocore = "=1.12.242"
+boto3 = "=1.9.238"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
