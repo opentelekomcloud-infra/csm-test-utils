@@ -1,0 +1,7 @@
+ocomone >= 0.3.1
+requests >= 2.22
+influx_line_protocol >= 0.1.3
+wrapt == 1.11.2
+PyYAML == 5.1.2
+botocore == 1.12.242
+boto3 == 1.9.238
