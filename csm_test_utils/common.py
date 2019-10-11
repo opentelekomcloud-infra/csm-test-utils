@@ -8,7 +8,7 @@ import requests
 from influx_line_protocol import MetricCollection
 from requests import Timeout
 
-base_parser = ArgumentParser(description="Script for monitor server downtime due to single node service dead")
+base_parser = ArgumentParser(description="Multi-purpose test script")
 
 base_parser.add_argument("--target", help="Load balancer address")
 __tgf_default = os.getenv("TGF_ADDRESS", "")
