@@ -1,9 +1,9 @@
 # Customer Service Monitoring test utils
-This repository contains set of simple Go- and Python-based utils for testing of CSM-created infrasctucture
 
 [![PyPI version](https://img.shields.io/pypi/v/csm-test-utils.svg)](https://pypi.org/project/csm-test-utils/)
 [![PyPI license](https://img.shields.io/pypi/l/csm-test-utils.svg)](https://pypi.org/project/csm-test-utils/)
 
+This repository contains set of simple Go- and Python-based utils for testing of CSM-created infrasctucture
 
 ### Why use Go for tests?
 
