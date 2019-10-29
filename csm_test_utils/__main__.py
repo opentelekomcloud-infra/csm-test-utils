@@ -8,5 +8,5 @@ if args.test == "monitor":
     c_main()
 if args.test == "rebalance":
     r_main(60)
-if args.test == "ent_monitor":
+if args.test == "rds_monitor":
     rds_main()
