@@ -1,12 +1,13 @@
 """Get cloud eye notifications and check that autoscaling is working"""
+import json
 
 import requests
-from flask import Flask, jsonify, request
+from flask import Flask, request
 from influx_line_protocol import Metric, MetricCollection
 
 from .common import base_parser, sub_parsers
 
-app = Flask("autoscaling_reports")
+app = Flask(__name__)
 
 AS_RESULT = "as_result"
 
@@ -15,10 +16,10 @@ AS_RESULT = "as_result"
 def smn():
     if request.method == 'POST':
         response = request.get_json()
-        if response['subscribe_url']:
+        if 'subscribe_url' in response:
             requests.get(response['subscribe_url'])
         else:
-            report(jsonify(response))
+            report(json.loads(response))
         return response
 
 
