@@ -1,20 +1,12 @@
 """Get cloud eye notifications and check that autoscaling is working"""
 
-import random
-import string
-
 import requests
 from flask import Flask, jsonify, request
 from influx_line_protocol import Metric, MetricCollection
 
 from .common import Client, base_parser, sub_parsers
 
-app = Flask(__name__)
-
-
-def _rand_str():
-    return "".join(random.choice(string.ascii_letters) for _ in range(10))
-
+app = Flask("autoscaling_reports")
 
 AS_RESULT = "as_result"
 
