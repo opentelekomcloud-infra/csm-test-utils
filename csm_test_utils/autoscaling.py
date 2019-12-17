@@ -2,14 +2,14 @@
 
 import random
 import string
-import time
-from threading import Thread
 
-from influx_line_protocol import Metric, MetricCollection
-from ocomone.session import BaseUrlSession
-from flask import Flask, jsonify, request
 import requests
+from flask import Flask, jsonify, request
+from influx_line_protocol import Metric, MetricCollection
+
 from .common import Client, base_parser, sub_parsers
+
+app = Flask(__name__)
 
 
 def _rand_str():
@@ -23,34 +23,35 @@ AS_RESULT = "as_result"
 def smn():
     if request.method == 'POST':
         response = request.get_json()
-        try:
-            subscribe = requests.get(response['subscribe_url'])
-        except:
-            print(response)
-            return response.status_code
+        if response['subscribe_url']:
+            requests.get(response['subscribe_url'])
+        else:
+            report(jsonify(response))
+        return response
 
 
-def check_and_report(client: Client):
-    session = BaseUrlSession(client.url)
-    result, elapsed = smn(session)
+def report(response_body):
+    time = response_body["message"]["alarmValue"][0]["time"]
+    value = response_body["message"]["alarmValue"][0]["value"]
+    status = response_body["message"]["alarm_status"]
 
     collection = MetricCollection()
     metric = Metric(AS_RESULT)
-    metric.add_value("elapsed", elapsed)
-    metric.add_tag("result", result)
+    metric.add_value("time", time)
+    metric.add_value("value", value)
+    metric.add_tag("status", status)
     collection.append(metric)
-    client.report_metric(collection)
+    _client.report_metric(collection)
 
 
 AGP = sub_parsers.add_parser("as_monitor", add_help=False, parents=[base_parser])
+AGP.add_argument("--port", help="port to be listened", default=23456, type=int)
+args, _ = AGP.parse_known_args()
+_client = Client(args.target, args.telegraf)
 
 
 def main():
-    args, _ = AGP.parse_known_args()
-    _client = Client(args.target, args.telegraf)
-    while True:
-        Thread(target=check_and_report, args=(_client,)).start()
-        time.sleep(0.2)
+    app.run(port=args.port, debug=True)
 
 
 if __name__ == '__main__':
