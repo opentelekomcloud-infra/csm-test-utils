@@ -12,21 +12,21 @@ app = Flask(__name__)
 AS_RESULT = "as_result"
 
 
-@app.route('/smn', methods=['POST'])
+@app.route("/smn", methods=["POST"])
 def smn():
-    if request.method == 'POST':
+    if request.method == "POST":
         response = request.get_json()
-        if 'subscribe_url' in response:
-            requests.get(response['subscribe_url'])
+        if "subscribe_url" in response:
+            requests.get(response["subscribe_url"])
         else:
-            report(json.loads(response))
+             report(json.loads(response["message"]))
         return response
 
 
 def report(response_body):
-    time = response_body["message"]["alarmValue"][0]["time"]
-    value = response_body["message"]["alarmValue"][0]["value"]
-    status = response_body["message"]["alarm_status"]
+    time = response_body["alarmValue"][0]["time"]
+    value = response_body["alarmValue"][0]["value"]
+    status = response_body["alarm_status"]
 
     collection = MetricCollection()
     metric = Metric(AS_RESULT)
@@ -47,5 +47,5 @@ def main():
     app.run(port=args.port, debug=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
