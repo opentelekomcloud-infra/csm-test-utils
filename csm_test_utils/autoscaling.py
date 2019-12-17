@@ -19,18 +19,16 @@ def smn():
         if "subscribe_url" in response:
             requests.get(response["subscribe_url"])
         else:
-             report(json.loads(response["message"]))
+            report(json.loads(response["message"]))
         return response
 
 
 def report(response_body):
-    time = response_body["alarmValue"][0]["time"]
     value = response_body["alarmValue"][0]["value"]
     status = response_body["alarm_status"]
 
     collection = MetricCollection()
     metric = Metric(AS_RESULT)
-    metric.add_value("time", time)
     metric.add_value("value", value)
     metric.add_tag("status", status)
     collection.append(metric)
