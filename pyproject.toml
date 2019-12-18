@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "csm-test-utils"
-version = "0.3.0"
+version = "0.2.3"
 description = "Utils for testing infructructure created by csm-sandbox"
 authors = ["OTC customer service monitroing team"]
 license = "Apache-2.0"

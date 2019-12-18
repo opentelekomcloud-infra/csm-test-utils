@@ -42,7 +42,7 @@ args, _ = AGP.parse_known_args()
 
 
 def main():
-    app.run(port=args.port, debug=True)
+    app.run(port=args.port)
 
 
 if __name__ == "__main__":
