@@ -2,7 +2,7 @@
 import json
 
 import requests
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from influx_line_protocol import Metric, MetricCollection
 
 from .common import base_parser, sub_parsers
@@ -20,6 +20,7 @@ def smn():
             requests.get(response["subscribe_url"])
         else:
             report(json.loads(response["message"]))
+        return jsonify(response)
 
 
 def report(response_body):
