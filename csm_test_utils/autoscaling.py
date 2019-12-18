@@ -20,7 +20,6 @@ def smn():
             requests.get(response["subscribe_url"])
         else:
             report(json.loads(response["message"]))
-        return response
 
 
 def report(response_body):
