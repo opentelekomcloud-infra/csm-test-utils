@@ -1,8 +1,9 @@
 """Get cloud eye notifications and check that autoscaling is working"""
 import json
+from threading import Thread
 
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
 from influx_line_protocol import Metric, MetricCollection
 
 from .common import base_parser, sub_parsers
@@ -13,6 +14,7 @@ AS_RESULT = "as_result"
 
 
 @app.route("/smn", methods=["POST"])
+@app.route("/smn/", methods=["POST"])
 def smn():
     if request.method == "POST":
         response = request.get_json()
@@ -42,7 +44,7 @@ args, _ = AGP.parse_known_args()
 
 
 def main():
-    app.run(port=args.port)
+    Thread(target=app.run, kwargs={'port': args.port}).start()
 
 
 if __name__ == "__main__":
