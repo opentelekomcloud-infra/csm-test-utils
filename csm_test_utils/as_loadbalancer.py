@@ -19,9 +19,11 @@ def get(client: Client):
     if requests.get("http://localhost:8080/").status_code == 200:
         result = "connected"
         reason = "ok"
+        LOGGER.info('OK ADD')
     else:
         result = "connection_lost"
         reason = "fail"
+        LOGGER.info('FAIL ADD')
 
     influx_row = f"${MEASUREMENT},reason=${reason} state=\"${result}\""
     client.report_metric(influx_row)
