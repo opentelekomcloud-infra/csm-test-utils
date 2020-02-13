@@ -1,4 +1,3 @@
-"""Script for new dashboard (sandbox)"""
 import logging
 import sys
 import time
@@ -8,13 +7,12 @@ from ocomone.logging import setup_logger
 
 from .common import base_parser, sub_parsers
 
-tgf_address = "localhost:8080/telegraf"
 MEASUREMENT = "as_loadbalancer"
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
-def report(target):
+def report(target, telegraf):
     """Send request and write metrics to telegraf"""
     if requests.get(target).status_code == 200:
         result = "connected"
@@ -26,7 +24,7 @@ def report(target):
         LOGGER.info("FAIL")
 
     influx_row = f"${MEASUREMENT},reason=${reason} state=\"${result}\""
-    res = requests.post(tgf_address, data=influx_row)
+    res = requests.post(telegraf, data=influx_row)
     assert res.status_code == 204, f"Status is {res.status_code}"
 
 
@@ -40,7 +38,7 @@ def main():
     LOGGER.info(f"Started monitoring of {args.target} (telegraf at {args.telegraf})")
     while True:
         try:
-            report(args.target)
+            report(args.target, args.telegraf)
             time.sleep(10)
         except KeyboardInterrupt:
             LOGGER.info("Monitoring Stopped")
