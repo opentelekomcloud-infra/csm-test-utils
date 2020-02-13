@@ -14,10 +14,6 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
-# TODO: setup_telegraf_local на вмку запустить скрипт указать адрес телеграфа и селектом смотреть *requests*
-# kappelmeister delatore start daemon
-
-
 def get(client: Client):
     """Send request and write metrics to telegraf"""
     if requests.get("http://localhost:8080/").status_code == 200:
