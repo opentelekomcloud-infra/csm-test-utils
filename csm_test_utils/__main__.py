@@ -1,3 +1,4 @@
+from csm_test_utils.as_loadbalancer import main as lb_main
 from csm_test_utils.autoscaling import main as as_main
 from csm_test_utils.common import root_parser
 from csm_test_utils.continuous import main as c_main
@@ -13,3 +14,5 @@ if args.test == "rds_monitor":
     rds_main()
 if args.test == "as_monitor":
     as_main()
+if args.test == "as_load":
+    lb_main()

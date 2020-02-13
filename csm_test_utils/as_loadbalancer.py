@@ -31,11 +31,11 @@ def get(client: Client):
     client.report_metric(influx_row)
 
 
-AGP = sub_parsers.add_parser("monitor", add_help=False, parents=[base_parser])
+AGP = sub_parsers.add_parser("as_load", add_help=False, parents=[base_parser])
 
 
 def main():
-    """Start monitoring autoscaling's loadbalancer"""
+    """Start monitoring autoscaling loadbalancer"""
     args, _ = AGP.parse_known_args()
     setup_logger(LOGGER, "continuous", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
     client = Client(args.target, args.telegraf)
