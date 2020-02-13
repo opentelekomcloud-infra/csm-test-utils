@@ -70,5 +70,5 @@ def main(timeout: float):
     print(f"LB rebalanced nodes: ({nodes})")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(60)
