@@ -14,7 +14,9 @@ LOGGER.setLevel(logging.DEBUG)
 
 def report(target, telegraf):
     """Send request and write metrics to telegraf"""
-    if requests.get(target).status_code == 200:
+    target_req = requests.get(target)
+    LOGGER.info(f'Status code of target is: {target_req.status_code}')
+    if target_req.status_code == 200:
         result = "connected"
         reason = "ok"
         LOGGER.info("tmp message: ok")
