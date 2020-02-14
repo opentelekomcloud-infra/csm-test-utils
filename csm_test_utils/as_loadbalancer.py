@@ -3,30 +3,33 @@ import sys
 import time
 
 import requests
+from influx_line_protocol import Metric
 from ocomone.logging import setup_logger
 
 from .common import base_parser, sub_parsers
 
-MEASUREMENT = "as_loadbalancer"
+AS_LOADBALANCER = "as_loadbalancer"
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
 def report(target, telegraf):
     """Send request and write metrics to telegraf"""
-    target_req = requests.get(target)
+    target_req = requests.get(target, headers={"Connection": "close"})
     LOGGER.info(f'Status code of target is: {target_req.status_code}')
+    influx_row = Metric(AS_LOADBALANCER)
     if target_req.status_code == 200:
-        result = "connected"
-        reason = "ok"
+        influx_row.add_tag("state", "connected")
+        influx_row.add_tag("reason", "ok")
+        influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
         LOGGER.info("tmp message: ok")
     else:
-        result = "connection_lost"
-        reason = "fail"
+        influx_row.add_tag("state", "connection_lost")
+        influx_row.add_tag("reason", "fail")
+        influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
         LOGGER.info("tmp message: fail")
 
-    influx_row = f"${MEASUREMENT},reason=${reason} state=\"${result}\""
-    res = requests.post(telegraf, data=influx_row)
+    res = requests.post(telegraf, data=str(influx_row))
     LOGGER.info(f'Status is: {res.status_code}')
     assert res.status_code == 204, f"Status is {res.status_code}"
 
