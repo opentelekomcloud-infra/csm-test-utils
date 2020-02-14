@@ -22,13 +22,11 @@ def report(target, telegraf):
         influx_row.add_tag("host", "scn4")
         influx_row.add_tag("reason", "ok")
         influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
-        LOGGER.info("tmp message: ok")
     else:
         influx_row.add_tag("state", "connection_lost")
         influx_row.add_tag("host", "scn4")
         influx_row.add_tag("reason", "fail")
         influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
-        LOGGER.info("tmp message: fail")
 
     res = requests.post(telegraf, data=str(influx_row))
     assert res.status_code == 204, f"Status is {res.status_code}"
