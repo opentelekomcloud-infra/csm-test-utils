@@ -16,7 +16,6 @@ LOGGER.setLevel(logging.DEBUG)
 def report(target, telegraf):
     """Send request and write metrics to telegraf"""
     target_req = requests.get(target, headers={"Connection": "close"})
-    LOGGER.info(f'Status code of target is: {target_req.status_code}')
     influx_row = Metric(AS_LOADBALANCER)
     if target_req.status_code == 200:
         influx_row.add_tag("state", "connected")
@@ -30,7 +29,6 @@ def report(target, telegraf):
         LOGGER.info("tmp message: fail")
 
     res = requests.post(telegraf, data=str(influx_row))
-    LOGGER.info(f'Status is: {res.status_code}')
     assert res.status_code == 204, f"Status is {res.status_code}"
 
 
@@ -38,9 +36,9 @@ AGP = sub_parsers.add_parser("as_load", add_help=False, parents=[base_parser])
 
 
 def main():
-    """Start monitoring autoscaling loadbalancer"""
+    """Start monitoring loadbalancer"""
     args, _ = AGP.parse_known_args()
-    setup_logger(LOGGER, "continuous", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
+    setup_logger(LOGGER, "lb_continuous", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
     LOGGER.info(f"Started monitoring of {args.target} (telegraf at {args.telegraf})")
     while True:
         try:
