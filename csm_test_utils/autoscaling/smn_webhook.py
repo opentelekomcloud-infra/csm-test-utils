@@ -6,7 +6,7 @@ import requests
 from flask import Flask, jsonify, request
 from influx_line_protocol import Metric, MetricCollection
 
-from .common import base_parser, sub_parsers
+from ..common import base_parser, sub_parsers
 
 app = Flask(__name__)
 
