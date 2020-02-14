@@ -6,7 +6,7 @@ import requests
 from influx_line_protocol import Metric
 from ocomone.logging import setup_logger
 
-from .common import base_parser, sub_parsers
+from ..common import base_parser, sub_parsers
 
 AS_LOADBALANCER = "as_loadbalancer"
 LOGGER = logging.getLogger(__name__)
@@ -19,11 +19,13 @@ def report(target, telegraf):
     influx_row = Metric(AS_LOADBALANCER)
     if target_req.status_code == 200:
         influx_row.add_tag("state", "connected")
+        influx_row.add_tag("host", "scn4")
         influx_row.add_tag("reason", "ok")
         influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
         LOGGER.info("tmp message: ok")
     else:
         influx_row.add_tag("state", "connection_lost")
+        influx_row.add_tag("host", "scn4")
         influx_row.add_tag("reason", "fail")
         influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
         LOGGER.info("tmp message: fail")
