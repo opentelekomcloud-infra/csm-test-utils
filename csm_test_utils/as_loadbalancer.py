@@ -17,11 +17,11 @@ def report(target, telegraf):
     if requests.get(target).status_code == 200:
         result = "connected"
         reason = "ok"
-        LOGGER.info("OK")
+        LOGGER.info("tmp message: ok")
     else:
         result = "connection_lost"
         reason = "fail"
-        LOGGER.info("FAIL")
+        LOGGER.info("tmp message: fail")
 
     influx_row = f"${MEASUREMENT},reason=${reason} state=\"${result}\""
     res = requests.post(telegraf, data=influx_row)
