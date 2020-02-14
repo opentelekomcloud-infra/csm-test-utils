@@ -25,6 +25,7 @@ def report(target, telegraf):
 
     influx_row = f"${MEASUREMENT},reason=${reason} state=\"${result}\""
     res = requests.post(telegraf, data=influx_row)
+    LOGGER.info(f'Status code of request to telegraf: {res.status_code}')
     assert res.status_code == 204, f"Status is {res.status_code}"
 
 
