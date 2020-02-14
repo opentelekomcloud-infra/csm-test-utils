@@ -6,7 +6,7 @@ import requests
 from influx_line_protocol import Metric
 from ocomone.logging import setup_logger
 
-from ..common import base_parser, sub_parsers, Client
+from ..common import Client, base_parser, sub_parsers
 
 AS_LOADBALANCER = "as_loadbalancer"
 LOGGER = logging.getLogger(__name__)
