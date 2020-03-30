@@ -5,7 +5,7 @@ import time
 import requests
 from influx_line_protocol import Metric
 from ocomone.logging import setup_logger
-
+from urllib.error import HTTPError
 from ..common import Client, base_parser, sub_parsers
 
 AS_LOADBALANCER = "as_loadbalancer"
@@ -29,13 +29,14 @@ def report(client: Client):
             influx_row.add_tag("host", "scn4")
             influx_row.add_tag("reason", "fail")
             influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
-    except Exception as E:
+    except (IOError, HTTPError) as Error:
         influx_row = Metric(CSM_EXCEPTION)
         influx_row.add_tag("Reporter", AS_LOADBALANCER)
-        influx_row.add_tag("Status", "Exception")
-        influx_row.add_value("Value", E)
+        influx_row.add_tag("Status", "Loadbalancer Unavailable")
+        influx_row.add_value("Value", Error)
+    except Exception as Ex:
+        return LOGGER.exception(Ex)
     client.report_metric(influx_row)
-
 
 AGP = sub_parsers.add_parser("as_load", add_help=False, parents=[base_parser])
 
