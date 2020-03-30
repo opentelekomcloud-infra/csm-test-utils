@@ -9,24 +9,31 @@ from ocomone.logging import setup_logger
 from ..common import Client, base_parser, sub_parsers
 
 AS_LOADBALANCER = "as_loadbalancer"
+CSM_EXCEPTION = "csm_exception"
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
 def report(client: Client):
     """Send request and write metrics to telegraf"""
-    target_req = requests.get(client.url, headers={"Connection": "close"})
-    influx_row = Metric(AS_LOADBALANCER)
-    if target_req.status_code == 200:
-        influx_row.add_tag("state", "connected")
-        influx_row.add_tag("host", "scn4")
-        influx_row.add_tag("reason", "ok")
-        influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
-    else:
-        influx_row.add_tag("state", "connection_lost")
-        influx_row.add_tag("host", "scn4")
-        influx_row.add_tag("reason", "fail")
-        influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
+    try:
+        target_req = requests.get(client.url, headers={"Connection": "close"})
+        influx_row = Metric(AS_LOADBALANCER)
+        if target_req.status_code == 200:
+            influx_row.add_tag("state", "connected")
+            influx_row.add_tag("host", "scn4")
+            influx_row.add_tag("reason", "ok")
+            influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
+        else:
+            influx_row.add_tag("state", "connection_lost")
+            influx_row.add_tag("host", "scn4")
+            influx_row.add_tag("reason", "fail")
+            influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
+    except Exception as E:
+        influx_row = Metric(CSM_EXCEPTION)
+        influx_row.add_tag("Reporter", AS_LOADBALANCER)
+        influx_row.add_tag("Status", "Exception")
+        influx_row.add_value("Value", E)
     client.report_metric(influx_row)
 
 
