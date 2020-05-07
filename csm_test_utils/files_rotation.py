@@ -43,15 +43,18 @@ def create_file(dd_input="/dev/urandom", base_file="/tmp/base_file.data", bs=120
     if not os.path.exists(base_file) or (round(time.time() - os.path.getmtime(base_file)) / 60) > 60:
         os.system(f"rm {base_file.split('.')[0]}*")
         os.system(f"/bin/dd if={dd_input} of={base_file} bs={bs} count={count}")
+        LOGGER.info(f"Base file created at {base_file}")
         base_hash = md5(base_file)
         copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
         shutil.copyfile(base_file, copy_name)
+        LOGGER.info(f"Base file copied to {copy_name}")
         copy_hash = md5(copy_name)
         return compare(base_hash, copy_hash)
     elif int(time.strftime('%M')) % 5 == 0:
         base_hash = md5(base_file)
         copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
         shutil.copyfile(base_file, copy_name)
+        LOGGER.info(f"Base file copied to {copy_name}")
         copy_hash = md5(copy_name)
         return compare(base_hash, copy_hash)
     else:
