@@ -1,10 +1,10 @@
 import logging
 import shutil
+import sys
 import time
 
 import hashlib
 import os
-import sys
 import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
@@ -50,22 +50,15 @@ def create_file(dd_input="/dev/urandom", base_file="/tmp/base_file.data", bs=120
         shutil.copyfile(base_file, base_copy)
         LOGGER.info(f"Base file copied to {base_copy}")
         copy_hash = md5(base_copy)
-        return compare(base_hash, copy_hash)
-    elif int(time.strftime('%M')) % 5 == 0:
+        return int(base_hash != copy_hash)
+    if int(time.strftime('%M')) % 5 == 0:
         base_hash = md5(base_file)
         copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
         shutil.copyfile(base_copy, copy_name)
         LOGGER.info(f"Base file copied to {copy_name}")
         copy_hash = md5(copy_name)
-        return compare(base_hash, copy_hash)
-    else:
-        md5(base_file)
-
-
-def compare(base, copy):
-    if base == copy:
-        return 0
-    return 1
+        return int(base_hash != copy_hash)
+    md5(base_file)
 
 
 def main():
