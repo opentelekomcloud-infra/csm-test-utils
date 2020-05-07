@@ -18,20 +18,23 @@ LOGGER.setLevel(logging.DEBUG)
 AGP = sub_parsers.add_parser("sfs_compare", add_help=False, parents=[base_parser])
 AGP.add_argument("--mount_point", help="point where NFS mounted", default="/mnt/sfs_share", type=str)
 
+
 def report(args):
     result = create_file(base_file=f"{args.mount_point}/file.dat")
-    collection = MetricCollection()
-    metric = Metric(SFS_COMPARE)
-    metric.add_value("result", result)
-    collection.append(metric)
-    res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
-    assert res.status_code == 204, f"Status is {res.status_code}"
+    if result is not None:
+        collection = MetricCollection()
+        metric = Metric(SFS_COMPARE)
+        metric.add_value("result", result)
+        collection.append(metric)
+        res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
+        assert res.status_code == 204, f"Status is {res.status_code}"
+        LOGGER.info(f"Metric written at: {args.telegraf})")
 
 
 def md5(file_name):
     hash_md5 = hashlib.md5()
-    with open(file_name, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
+    with open(file_name, "rb") as file:
+        for chunk in iter(lambda: file.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
@@ -44,19 +47,21 @@ def create_file(dd_input="/dev/urandom", base_file="/tmp/base_file.data", bs=120
         copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
         shutil.copyfile(base_file, copy_name)
         copy_hash = md5(copy_name)
-        if base_hash == copy_hash:
-            return "Hash of Base File and Copy are Equal"
-        else:
-            return "Hash of Base File and Copy are not Equal"
-    else:
+        return compare(base_hash, copy_hash)
+    elif int(time.strftime('%M')) % 5 == 0:
         base_hash = md5(base_file)
         copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
         shutil.copyfile(base_file, copy_name)
         copy_hash = md5(copy_name)
-        if base_hash == copy_hash:
-            return "Hash of Base File and Copy are Equal"
-        else:
-            return "Hash of Base File and Copy are not Equal"
+        return compare(base_hash, copy_hash)
+    else:
+        md5(base_file)
+
+
+def compare(base, copy):
+    if base == copy:
+        return 0
+    return 1
 
 
 def main():
