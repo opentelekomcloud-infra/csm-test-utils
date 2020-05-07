@@ -4,6 +4,7 @@ import time
 
 import hashlib
 import os
+import sys
 import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
@@ -40,20 +41,20 @@ def md5(file_name):
 
 
 def create_file(dd_input="/dev/urandom", base_file="/tmp/base_file.data", bs=1200000, count=100):
+    base_copy = f"{base_file}_copy"
     if not os.path.exists(base_file) or (round(time.time() - os.path.getmtime(base_file)) / 60) > 60:
         os.system(f"rm {base_file.split('.')[0]}*")
         os.system(f"/bin/dd if={dd_input} of={base_file} bs={bs} count={count}")
         LOGGER.info(f"Base file created at {base_file}")
         base_hash = md5(base_file)
-        copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
-        shutil.copyfile(base_file, copy_name)
-        LOGGER.info(f"Base file copied to {copy_name}")
-        copy_hash = md5(copy_name)
+        shutil.copyfile(base_file, base_copy)
+        LOGGER.info(f"Base file copied to {base_copy}")
+        copy_hash = md5(base_copy)
         return compare(base_hash, copy_hash)
     elif int(time.strftime('%M')) % 5 == 0:
         base_hash = md5(base_file)
         copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
-        shutil.copyfile(base_file, copy_name)
+        shutil.copyfile(base_copy, copy_name)
         LOGGER.info(f"Base file copied to {copy_name}")
         copy_hash = md5(copy_name)
         return compare(base_hash, copy_hash)
