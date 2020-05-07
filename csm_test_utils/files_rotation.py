@@ -24,7 +24,7 @@ def report(args):
     if result is not None:
         collection = MetricCollection()
         metric = Metric(SFS_COMPARE)
-        metric.add_value("result", result)
+        metric.add_value("value", result)
         collection.append(metric)
         res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
         assert res.status_code == 204, f"Status is {res.status_code}"
