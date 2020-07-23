@@ -50,7 +50,7 @@ def main():
     while True:
         try:
             report(args)
-            time.sleep(60)
+            time.sleep(.3)
         except KeyboardInterrupt:
             LOGGER.info("Monitoring Stopped")
             sys.exit(0)
