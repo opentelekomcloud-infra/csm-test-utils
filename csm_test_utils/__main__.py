@@ -4,7 +4,7 @@ from csm_test_utils.continuous import main as c_main
 from csm_test_utils.continuous_entities import main as rds_main
 from csm_test_utils.files_rotation import main as sfs_main
 from csm_test_utils.rebalance_test import main as r_main
-from csm_test_utils.dns_resolving import main as d_main
+from csm_test_utils.dns import dns_lookup_main, host_main
 
 args = root_parser.parse_args()
 if args.test == "monitor":
@@ -20,4 +20,6 @@ if args.test == "as_load":
 if args.test == "sfs_compare":
     sfs_main()
 if args.test == "internal_dns_resolve":
-    d_main()
+    dns_lookup_main()
+if args.test == "internal_dns_host_check":
+    host_main()
