@@ -25,9 +25,9 @@ def report(args):
     try:
         ais = socket.getaddrinfo(args.dns_name, 0, 0, 0, 0)
     except socket.gaierror as Err:
-        metric.add_value("ips", "")
+        metric.add_value("ips", Err)
         metric.add_tag("dns_name", args.dns_name)
-        metric.add_tag("result", Err)
+        metric.add_tag("result", "Not Resolved")
         collection.append(metric)
         res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
         assert res.status_code == 204, f"Status is {res.status_code}"
