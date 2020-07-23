@@ -6,10 +6,14 @@ import time
 import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
+from requests import Timeout
 
 from .common import base_parser, sub_parsers
 
 INT_DNS = "int_dns_resolve"
+INT_DNS_TIMING = "int_dns_timing"
+INT_DNS_TIMEOUT = "int_dns_timeout"
+collection = MetricCollection()
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -18,13 +22,12 @@ AGP = sub_parsers.add_parser("internal_dns_resolve", add_help=False, parents=[ba
 AGP.add_argument("--dns_name", help="dns name of server to resolve", type=str)
 
 
-def report(args):
+def dns_resolve(args):
     ip_list = []
-    collection = MetricCollection()
     metric = Metric(INT_DNS)
     try:
         ais = socket.getaddrinfo(args.dns_name, 0, 0, 0, 0)
-    except socket.error as Err:
+    except socket.gaierror as Err:
         metric.add_value("ips", Err)
         metric.add_tag("dns_name", args.dns_name)
         metric.add_tag("result", "Not Resolved")
@@ -45,6 +48,27 @@ def report(args):
         assert res.status_code == 204, f"Status is {res.status_code}"
         LOGGER.info(f"Metric written at: {args.telegraf})")
 
+def get_client_response(args):
+    """Send request and write metrics to telegraf"""
+    timeout = 5
+    try:
+        res = requests.get(args.dns_name, headers={"Connection": "close"}, timeout=timeout)
+    except Timeout:
+        LOGGER.exception("Timeout sending request to LB")
+        lb_timeout = Metric(INT_DNS_TIMEOUT)
+        lb_timeout.add_tag("client", args.dns_name)
+        lb_timeout.add_value("timeout", timeout * 1000)
+        collection.append(lb_timeout)
+    else:
+        lb_timing = Metric(INT_DNS_TIMING)
+        lb_timing.add_tag("client", args.dns_name)
+        lb_timing.add_tag("server", res.headers["Server"])
+        lb_timing.add_value("elapsed", res.elapsed.microseconds / 1000)
+        collection.append(lb_timing)
+    res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
+    assert res.status_code == 204, f"Status is {res.status_code}"
+    LOGGER.info(f"Metric written at: {args.telegraf})")
+
 
 def main():
     args, _ = AGP.parse_known_args()
@@ -53,8 +77,10 @@ def main():
     LOGGER.info(f"Started monitoring of Internal DNS (telegraf at {args.telegraf})")
     while True:
         try:
-            report(args)
-            time.sleep(.3)
+            dns_resolve(args)
+            time.sleep(.2)
+            get_client_response(args)
+            time.sleep(.1)
         except KeyboardInterrupt:
             LOGGER.info("Monitoring Stopped")
             sys.exit(0)
