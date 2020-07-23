@@ -24,7 +24,7 @@ def report(args):
     metric = Metric(INT_DNS)
     try:
         ais = socket.getaddrinfo(args.dns_name, 0, 0, 0, 0)
-    except socket.gaierror as Err:
+    except socket.error as Err:
         metric.add_value("ips", Err)
         metric.add_tag("dns_name", args.dns_name)
         metric.add_tag("result", "Not Resolved")
