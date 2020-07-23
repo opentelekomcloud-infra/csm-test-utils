@@ -47,9 +47,9 @@ def dns_resolve(args):
         res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
         assert res.status_code == 204, f"Status is {res.status_code}"
         LOGGER.info(f"Metric written at: {args.telegraf})")
+    get_client_response(args)
 
 def get_client_response(args):
-    """Send request and write metrics to telegraf"""
     timeout = 5
     try:
         res = requests.get(f"http://{args.dns_name}", headers={"Connection": "close"}, timeout=timeout)
@@ -78,9 +78,7 @@ def main():
     while True:
         try:
             dns_resolve(args)
-            time.sleep(.2)
-            get_client_response(args)
-            time.sleep(.1)
+            time.sleep(.3)
         except KeyboardInterrupt:
             LOGGER.info("Monitoring Stopped")
             sys.exit(0)
