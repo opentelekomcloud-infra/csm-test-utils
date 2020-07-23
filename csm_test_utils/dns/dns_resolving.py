@@ -9,9 +9,8 @@ from ocomone.logging import setup_logger
 
 from ..common import base_parser, sub_parsers
 
-INT_DNS = "int_dns_resolve"
-INT_DNS_TIMING = "int_dns_timing"
-INT_DNS_TIMEOUT = "int_dns_timeout"
+INT_DNS = "int_dns_resolving"
+
 collection = MetricCollection()
 
 LOGGER = logging.getLogger(__name__)
