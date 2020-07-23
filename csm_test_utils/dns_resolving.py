@@ -52,7 +52,7 @@ def get_client_response(args):
     """Send request and write metrics to telegraf"""
     timeout = 5
     try:
-        res = requests.get(args.dns_name, headers={"Connection": "close"}, timeout=timeout)
+        res = requests.get(f"http://{args.dns_name}", headers={"Connection": "close"}, timeout=timeout)
     except Timeout:
         LOGGER.exception("Timeout sending request to LB")
         lb_timeout = Metric(INT_DNS_TIMEOUT)
