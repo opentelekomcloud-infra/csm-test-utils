@@ -49,7 +49,7 @@ def main():
     while True:
         try:
             get_client_response(args)
-            time.sleep(0.5)
+            time.sleep(5)
         except KeyboardInterrupt:
             LOGGER.info("Monitoring Stopped")
             sys.exit(0)
