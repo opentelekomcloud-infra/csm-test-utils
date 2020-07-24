@@ -47,14 +47,22 @@ def create_file(dd_input="/dev/urandom", base_file="/tmp/base_file.data", bs=120
         os.system(f"/bin/dd if={dd_input} of={base_file} bs={bs} count={count}")
         LOGGER.info(f"Base file created at {base_file}")
         base_hash = md5(base_file)
-        shutil.copyfile(base_file, base_copy)
+        try:
+            shutil.copyfile(base_file, base_copy)
+        except IOError as Error:
+            LOGGER.error(Error)
+            return
         LOGGER.info(f"Base file copied to {base_copy}")
         copy_hash = md5(base_copy)
         return int(base_hash != copy_hash)
     if int(time.strftime('%M')) % 5 == 0:
         base_hash = md5(base_file)
         copy_name = f"{base_file}_copy_{time.strftime('%H:%M')}"
-        shutil.copyfile(base_copy, copy_name)
+        try:
+            shutil.copyfile(base_copy, copy_name)
+        except IOError as Error:
+            LOGGER.error(Error)
+            return
         LOGGER.info(f"Base file copied to {copy_name}")
         copy_hash = md5(copy_name)
         return int(base_hash != copy_hash)
