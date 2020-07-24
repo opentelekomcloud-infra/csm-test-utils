@@ -21,26 +21,13 @@ AGP.add_argument("--dns_name", help="dns name of server to resolve", type=str)
 
 
 def dns_resolve(args):
-    ip_list = []
     metric = Metric(INT_DNS)
     try:
-        ais = socket.getaddrinfo(args.dns_name, 0, 0, 0, 0)
+        socket.getaddrinfo(args.dns_name, 0, 0, 0, 0)
     except socket.gaierror as Err:
         metric.add_value("ips", Err)
         metric.add_tag("dns_name", args.dns_name)
         metric.add_tag("result", "Not Resolved")
-        collection.append(metric)
-        res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
-        assert res.status_code == 204, f"Status is {res.status_code}"
-        LOGGER.info(f"Metric written at: {args.telegraf})")
-        return
-    for result in ais:
-        ip_list.append(result[-1][0])
-    ip_list = list(set(ip_list))
-    if ip_list is not None:
-        metric.add_value("ips", ip_list)
-        metric.add_tag("dns_name", args.dns_name)
-        metric.add_tag("result", "Resolved")
         collection.append(metric)
         res = requests.post(f"{args.telegraf}/telegraf", data=str(collection), timeout=2)
         assert res.status_code == 204, f"Status is {res.status_code}"
