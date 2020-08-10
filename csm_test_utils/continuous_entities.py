@@ -73,7 +73,7 @@ def main():
     _client = Client(args.target, args.telegraf)
     while True:
         Thread(target=check_and_report, args=(_client,)).start()
-        time.sleep(0.2)
+        time.sleep(1)
 
 
 if __name__ == "__main__":
