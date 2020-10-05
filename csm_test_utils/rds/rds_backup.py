@@ -93,8 +93,8 @@ def report(client: Client, token: str, project_id: str, **request_params):
                 influx_row.add_tag("type", backup["type"])
                 influx_row.add_tag("status", backup["status"])
                 influx_row.add_tag("size", backup["size"])
-                influx_row.add_tag("begin_time", backup["begin_time"])# timestamp?
-                influx_row.add_tag("end_time", backup["end_time"])# timestamp?
+                influx_row.add_tag("begin_time", backup["begin_time"])
+                influx_row.add_tag("end_time", backup["end_time"])
                 influx_row.add_tag("duration (sec)", get_duration(backup["begin_time"], backup["end_time"]))
                 collection.append(influx_row)
         else:
