@@ -53,9 +53,7 @@ def get_auth_token() -> str:
     url = "/".join([BASE_URL, "auth/tokens"])
     response = requests.post(url = url, data = request_body, headers = request_headers)
     token = response.headers.get('X-Subject-Token')
-    print(token)
     project_id = response.json()['token']['project']['id']
-    print(project_id)
     return token, project_id
 
 
@@ -125,9 +123,9 @@ def main():
     token, project_id = get_auth_token()
     instance_id = args.instance_id
     request_params = {'instance_id': instance_id, 'backup_type': 'auto'}
-    report(token, project_id, **request_params)
-    setup_logger(LOGGER, "rds_backup_monitor", log_dir = args.log_dir, log_format = "[%(asctime)s] %(message)s")
     client = Client(args.target, args.telegraf)
+    report(client, token, project_id, **request_params)
+    setup_logger(LOGGER, "rds_backup_monitor", log_dir = args.log_dir, log_format = "[%(asctime)s] %(message)s")
     LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
     while True:
         try:
