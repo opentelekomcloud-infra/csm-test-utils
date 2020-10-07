@@ -81,9 +81,9 @@ def get_rds_backup_status(token: str, project_id: str, instance_id: str, backup_
 
 def report(client: Client, token: str, project_id: str, **request_params):
     """Send request and write metrics to telegraf"""
-    influx_row = Metric(RDS_BACKUP)
     collection = MetricCollection()
     try:
+        influx_row = Metric(RDS_BACKUP)
         target_req = get_rds_backup_info(token, project_id, **request_params)
         if target_req.ok:
             backups = target_req.json()["backups"]
