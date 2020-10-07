@@ -38,7 +38,7 @@ def get_auth_token() -> str:
                                'name': data['clouds'][cloud_name]['auth']['username'],
                                'password': data['clouds'][cloud_name]['auth']['password'],
                                'domain': {
-                                 'name': data['clouds'][cloud_name]['auth']['user_domain_name']
+                                 'name': data['clouds'][cloud_name]['auth']['domain_name']
                                }
                              }
                            }
