@@ -52,9 +52,10 @@ def get_auth_token() -> str:
         })
     url = "/".join([BASE_URL, "auth/tokens"])
     response = requests.post(url = url, data = request_body, headers = request_headers)
-    print(response)
     token = response.headers.get('X-Subject-Token')
+    print(token)
     project_id = response.json()['token']['project']['id']
+    print(project_id)
     return token, project_id
 
 
