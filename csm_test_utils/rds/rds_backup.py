@@ -24,7 +24,7 @@ LOGGER.setLevel(logging.DEBUG)
 
 def get_auth_token() -> str:
     """Get auth token using data from clouds.yaml file. Token and project_id are returned as a string"""
-    cloud_name = os.getenv("TF_VAR_cloud")
+    cloud_name = os.getenv("CLOUD_NAME")
     cloud_file = os.getenv("OS_CLIENT_CONFIG_FILE")
     with open(cloud_file) as clouds_yaml:
         data = yaml.safe_load(clouds_yaml)
@@ -85,6 +85,7 @@ def report(client: Client, token: str, project_id: str, **request_params):
     try:
         influx_row = Metric(RDS_BACKUP)
         target_req = get_rds_backup_info(token, project_id, **request_params)
+        print(target_req.status_code)
         if target_req.ok:
             backups = target_req.json()["backups"]
             for backup in backups:
@@ -97,6 +98,7 @@ def report(client: Client, token: str, project_id: str, **request_params):
                 influx_row.add_tag("end_time", backup["end_time"])
                 influx_row.add_value("backup_duration", get_duration(backup["begin_time"], backup["end_time"]))
                 collection.append(influx_row)
+            print(collection.__str__())
         else:
             influx_row.add_tag("state", "connection_lost")
             influx_row.add_tag("host", "scn6")
@@ -130,7 +132,7 @@ def main():
     while True:
         try:
             report(client, token, project_id, **request_params)
-            time.sleep(360)
+            time.sleep(60)
         except KeyboardInterrupt:
             LOGGER.info("Monitoring Stopped")
             sys.exit(0)
