@@ -109,7 +109,6 @@ def report(client: Client, token: str, project_id: str, **request_params):
         influx_row.add_tag("Status", "RDS Unavailable")
         influx_row.add_value("Value", Error)
         collection.append(influx_row)
-        print(collection.__str__())
     except Exception as Ex:
         return LOGGER.exception(Ex)
     print(collection.__str__())
