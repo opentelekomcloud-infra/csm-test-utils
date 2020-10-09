@@ -83,6 +83,7 @@ def report(client: Client, token: str, project_id: str, **request_params):
     """Send request and write metrics to telegraf"""
     collection = MetricCollection()
     try:
+        print("1:" + collection.__str__())
         influx_row = Metric(RDS_BACKUP)
         target_req = get_rds_backup_info(token, project_id, **request_params)
         if target_req.ok:
@@ -97,21 +98,24 @@ def report(client: Client, token: str, project_id: str, **request_params):
                 influx_row.add_tag("end_time", backup["end_time"])
                 influx_row.add_value("backup_duration", get_duration(backup["begin_time"], backup["end_time"]))
                 collection.append(influx_row)
+            print("2:" + collection.__str__())
         else:
             influx_row.add_tag("status", "request_failed")
             influx_row.add_tag("host", "scn6")
             influx_row.add_tag("reason", "fail")
             influx_row.add_value("elapsed", target_req.elapsed.seconds)
             collection.append(influx_row)
+            print("3:" + collection.__str__())
     except (IOError, HTTPError) as Error:
         influx_row = Metric(CSM_EXCEPTION)
         influx_row.add_tag("Reporter", RDS_BACKUP)
         influx_row.add_tag("Status", "RDS Unavailable")
         influx_row.add_value("Value", Error)
         collection.append(influx_row)
+        print("4:" + collection.__str__())
     except Exception as Ex:
         return LOGGER.exception(Ex)
-    print(collection.__str__)
+    print("5:" + collection.__str__)
     client.report_metric(collection)
 
 
