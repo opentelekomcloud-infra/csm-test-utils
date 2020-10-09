@@ -2,9 +2,7 @@ import datetime
 import logging
 import sys
 import time
-
 import requests
-import os
 import yaml
 import json
 
@@ -22,11 +20,9 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
-def get_auth_token() -> str:
+def get_auth_token(cloud_name, cloud_config) -> str:
     """Get auth token using data from clouds.yaml file. Token and project_id are returned as a string"""
-    cloud_name = os.getenv("CLOUD_NAME")
-    cloud_file = os.getenv("OS_CLIENT_CONFIG_FILE")
-    with open(cloud_file) as clouds_yaml:
+    with open(cloud_config) as clouds_yaml:
         data = yaml.safe_load(clouds_yaml)
     request_headers = {'Content-Type': 'application/json;charset=utf8'}
     request_body = json.dumps({
@@ -107,19 +103,19 @@ def report(client: Client, token: str, project_id: str, **request_params):
         collection.append(influx_row)
     except Exception as Ex:
         return LOGGER.exception(Ex)
-    print(collection.__str__())
     client.report_metric(collection)
 
 
 AGP = sub_parsers.add_parser(RDS_BACKUP, add_help=False, parents=[base_parser])
 AGP.add_argument("--instance_id", help = "RDS instance ID")
+AGP.add_argument("--cloud_config", help = "Clouds config file")
+AGP.add_argument("--cloud_name", help = "Name of cloud")
 
 
 def main():
     args, _ = AGP.parse_known_args()
-    token, project_id = get_auth_token()
-    instance_id = args.instance_id
-    request_params = {'instance_id': instance_id, 'backup_type': 'auto'}
+    token, project_id = get_auth_token(args.cloud_config, args.cloud_name)
+    request_params = {'instance_id': args.instance_id, 'backup_type': 'auto'}
     client = Client(args.target, args.telegraf)
     setup_logger(LOGGER, "rds_backup_monitor", log_dir = args.log_dir, log_format = "[%(asctime)s] %(message)s")
     LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
