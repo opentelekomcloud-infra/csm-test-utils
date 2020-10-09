@@ -85,7 +85,6 @@ def report(client: Client, token: str, project_id: str, **request_params):
     try:
         influx_row = Metric(RDS_BACKUP)
         target_req = get_rds_backup_info(token, project_id, **request_params)
-        print(target_req.status_code)
         if target_req.ok:
             backups = target_req.json()["backups"]
             for backup in backups:
@@ -98,9 +97,8 @@ def report(client: Client, token: str, project_id: str, **request_params):
                 influx_row.add_tag("end_time", backup["end_time"])
                 influx_row.add_value("backup_duration", get_duration(backup["begin_time"], backup["end_time"]))
                 collection.append(influx_row)
-            print(collection.__str__())
         else:
-            influx_row.add_tag("state", "connection_lost")
+            influx_row.add_tag("status", "request_failed")
             influx_row.add_tag("host", "scn6")
             influx_row.add_tag("reason", "fail")
             influx_row.add_value("elapsed", target_req.elapsed.seconds)
@@ -126,7 +124,6 @@ def main():
     instance_id = args.instance_id
     request_params = {'instance_id': instance_id, 'backup_type': 'auto'}
     client = Client(args.target, args.telegraf)
-    report(client, token, project_id, **request_params)
     setup_logger(LOGGER, "rds_backup_monitor", log_dir = args.log_dir, log_format = "[%(asctime)s] %(message)s")
     LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
     while True:
