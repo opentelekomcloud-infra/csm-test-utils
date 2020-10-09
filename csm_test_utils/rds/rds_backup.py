@@ -20,7 +20,7 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
 
-def get_auth_token(cloud_name, cloud_config) -> str:
+def get_auth_token(cloud_config, cloud_name) -> str:
     """Get auth token using data from clouds.yaml file. Token and project_id are returned as a string"""
     with open(cloud_config) as clouds_yaml:
         data = yaml.safe_load(clouds_yaml)
