@@ -89,12 +89,8 @@ def report(client: Client, token: str, project_id: str, **request_params):
             backups = target_req.json()["backups"]
             for backup in backups:
                 influx_row.add_tag("id_backup", backup["id"])
-                influx_row.add_tag("name", backup["name"])
-                influx_row.add_tag("type", backup["type"])
                 influx_row.add_tag("status", backup["status"])
                 influx_row.add_tag("size", backup["size"])
-                influx_row.add_tag("begin_time", backup["begin_time"])
-                influx_row.add_tag("end_time", backup["end_time"])
                 influx_row.add_value("backup_duration", get_duration(backup["begin_time"], backup["end_time"]))
                 collection.append(influx_row)
         else:
