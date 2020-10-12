@@ -13,18 +13,19 @@ from datetime import datetime
 from ..common import Client, base_parser, sub_parsers
 
 
-BASE_URL = "https://rds.eu-de.otc.t-systems.com/v3"
+API_VERSION = "v3"
 RDS_BACKUP = "rds_backup_monitor"
 CSM_EXCEPTION = "csm_exception"
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
+CONTENT_TYPE = 'application/json;charset=utf8'
 
 
-def get_auth_token(cloud_config, cloud_name) -> str:
+def get_auth_token(endpoint, cloud_config, cloud_name):
     """Get auth token using data from clouds.yaml file. Token and project_id are returned as a string"""
     with open(cloud_config) as clouds_yaml:
         data = yaml.safe_load(clouds_yaml)
-    request_headers = {'Content-Type': 'application/json;charset=utf8'}
+    request_headers = {'Content-Type': CONTENT_TYPE}
     request_body = json.dumps({
                        'auth': {
                          'identity': {
@@ -46,41 +47,45 @@ def get_auth_token(cloud_config, cloud_name) -> str:
                          }
                        }
         })
-    url = "/".join([BASE_URL, "auth/tokens"])
+    url = "/".join([endpoint, API_VERSION, "auth/tokens"])
     response = requests.post(url = url, data = request_body, headers = request_headers)
     token = response.headers.get('X-Subject-Token')
     project_id = response.json()['token']['project']['id']
     return token, project_id
 
 
-def get_rds_backup_info(token: str, project_id: str, **request_params) -> Response:
-    url = "/".join([BASE_URL, project_id, "backups?"])
-    request_headers = {'Content-Type': 'application/json;charset=utf8', 'X-Auth-Token': token}
+def get_rds_backup_info(endpoint: str, token: str, project_id: str, **request_params) -> Response:
+    """Get full information about RDS backups"""
+    url = "/".join([endpoint, API_VERSION, project_id, "backups?"])
+    request_headers = {'Content-Type': CONTENT_TYPE, 'X-Auth-Token': token}
     response = requests.get(url = url, params = request_params, headers = request_headers)
     return response
 
 
 def get_duration(start_time: str, end_time: str):
+    """Get RDS backup duration"""
     time_delta = (format_date_time(end_time) - format_date_time(start_time)).total_seconds()
     return time_delta
 
 
-def format_date_time(date_time: str):
+def format_date_time(date_time: str) -> datetime:
+    """Format date and time"""
     return datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z")
 
 
-def get_rds_backup_status(token: str, project_id: str, instance_id: str, backup_type: str) -> str:
+def get_rds_backup_status(endpoint: str, token: str, project_id: str, instance_id: str, backup_type: str) -> Response:
+    """Return RDS backup status"""
     request_params = {'instance_id': instance_id, 'backup_type': backup_type}
-    response = get_rds_backup_info(token, project_id, **request_params)
+    response = get_rds_backup_info(endpoint, token, project_id, **request_params)
     return response
 
 
-def report(client: Client, token: str, project_id: str, **request_params):
+def report(client: Client, endpoint: str, token: str, project_id: str, **request_params):
     """Send request and write metrics to telegraf"""
     collection = MetricCollection()
     try:
         influx_row = Metric(RDS_BACKUP)
-        target_req = get_rds_backup_info(token, project_id, **request_params)
+        target_req = get_rds_backup_info(endpoint, token, project_id, **request_params)
         if target_req.ok:
             backups = target_req.json()["backups"]
             for backup in backups:
@@ -110,19 +115,20 @@ AGP = sub_parsers.add_parser(RDS_BACKUP, add_help=False, parents=[base_parser])
 AGP.add_argument("--instance_id", help = "RDS instance ID")
 AGP.add_argument("--cloud_config", help = "Clouds config file")
 AGP.add_argument("--cloud_name", help = "Name of cloud")
+AGP.add_argument("--endpoint", help = "Endpoint")
 
 
 def main():
     args, _ = AGP.parse_known_args()
-    token, project_id = get_auth_token(args.cloud_config, args.cloud_name)
+    token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
     request_params = {'instance_id': args.instance_id, 'backup_type': 'auto'}
     client = Client(args.target, args.telegraf)
     setup_logger(LOGGER, "rds_backup_monitor", log_dir = args.log_dir, log_format = "[%(asctime)s] %(message)s")
     LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
     while True:
         try:
-            report(client, token, project_id, **request_params)
-            time.sleep(60)
+            report(client, args.endpoint, token, project_id, **request_params)
+            time.sleep(3600)
         except KeyboardInterrupt:
             LOGGER.info("Monitoring Stopped")
             sys.exit(0)
