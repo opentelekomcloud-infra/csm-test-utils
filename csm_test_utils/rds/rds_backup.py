@@ -25,6 +25,7 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
     """Get auth token using data from clouds.yaml file. Token and project_id are returned as a string"""
     with open(cloud_config) as clouds_yaml:
         data = yaml.safe_load(clouds_yaml)
+    auth_data = data['clouds'][cloud_name]['auth']
     request_headers = {'Content-Type': CONTENT_TYPE}
     request_body = json.dumps({
                        'auth': {
@@ -32,17 +33,17 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
                            'methods': ['password'],
                            'password': {
                              'user': {
-                               'name': data['clouds'][cloud_name]['auth']['username'],
-                               'password': data['clouds'][cloud_name]['auth']['password'],
+                               'name': auth_data['username'],
+                               'password': auth_data['password'],
                                'domain': {
-                                 'name': data['clouds'][cloud_name]['auth']['domain_name']
+                                 'name': auth_data['domain_name']
                                }
                              }
                            }
                          },
                          'scope': {
                            'project': {
-                             'name': data['clouds'][cloud_name]['auth']['project_name']
+                             'name': auth_data['project_name']
                            }
                          }
                        }
