@@ -121,13 +121,13 @@ AGP.add_argument("--endpoint", help = "Endpoint")
 
 def main():
     args, _ = AGP.parse_known_args()
-    token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
     request_params = {'instance_id': args.instance_id, 'backup_type': 'auto'}
     client = Client(args.target, args.telegraf)
     setup_logger(LOGGER, "rds_backup_monitor", log_dir = args.log_dir, log_format = "[%(asctime)s] %(message)s")
     LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
     while True:
         try:
+            token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
             report(client, args.endpoint, token, project_id, **request_params)
             time.sleep(3600)
         except KeyboardInterrupt:
