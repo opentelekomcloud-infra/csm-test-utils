@@ -127,7 +127,9 @@ def main():
     LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
     while True:
         try:
+            LOGGER.info("Generate token")
             token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
+            LOGGER.info("Monitoring")
             report(client, args.endpoint, token, project_id, **request_params)
             time.sleep(3600)
         except KeyboardInterrupt:
