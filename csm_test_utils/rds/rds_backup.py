@@ -55,9 +55,9 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
             token = response.headers.get('X-Subject-Token')
             project_id = response.json()['token']['project']['id']
         except requests.exceptions as ex:
-            LOGGER.exception("Requests error occur:" + ex)
+            LOGGER.exception(ex)
     except Exception as ex:
-        LOGGER.exception("Error occur:" + ex)
+        LOGGER.exception(ex)
     return token, project_id
 
 
@@ -68,7 +68,7 @@ def get_rds_backup_info(endpoint: str, token: str, project_id: str, **request_pa
     try:
         response = requests.get(url = url, params = request_params, headers = request_headers)
     except requests.exceptions as ex:
-        LOGGER.exception("Requests error occur:" + ex)
+        LOGGER.exception(ex)
     return response
 
 
@@ -89,7 +89,7 @@ def get_rds_backup_status(endpoint: str, token: str, project_id: str, instance_i
     try:
         response = get_rds_backup_info(endpoint, token, project_id, **request_params)
     except requests.exceptions as ex:
-        LOGGER.exception("Requests error occur:" + ex)
+        LOGGER.exception(ex)
     return response
 
 
@@ -119,8 +119,8 @@ def report(client: Client, endpoint: str, token: str, project_id: str, **request
         influx_row.add_tag("Status", "RDS Unavailable")
         influx_row.add_value("Value", Error)
         collection.append(influx_row)
-    except Exception as Ex:
-        return LOGGER.exception(Ex)
+    except Exception as ex:
+        return LOGGER.exception(ex)
     client.report_metric(collection)
 
 
