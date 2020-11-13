@@ -23,11 +23,12 @@ def get(client: Client):
     metrics = MetricCollection()
     try:
         res = requests.get(client.url, headers={"Connection": "close"}, timeout=timeout)
-    except Timeout:
+    except Exception as Ex:
         LOGGER.exception("Timeout sending request to LB")
         lb_timeout = Metric(LB_TIMEOUT)
         lb_timeout.add_tag("client", client.host_name)
         lb_timeout.add_value("timeout", timeout * 1000)
+        lb_timeout.add_value("exception", Ex)
         metrics.append(lb_timeout)
     else:
         lb_timing = Metric(LB_TIMING)
