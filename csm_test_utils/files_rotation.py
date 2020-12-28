@@ -43,9 +43,7 @@ def md5(file_name):
 def create_file(dd_input="/dev/urandom", base_file="/tmp/base_file.data", bs=1200000, count=100):
     base_copy = f"{base_file}_copy"
     if not os.path.exists(base_file) or (round(time.time() - os.path.getmtime(base_file)) / 60) > 60:
-        files = [i for i in os.listdir()]
-        if files:
-            [os.remove(i) for i in files]
+        [os.remove(i) for i in [files for files in os.listdir()]]
         os.system(f"/bin/dd if={dd_input} of={base_file} bs={bs} count={count}")
         LOGGER.info(f"Base file created at {base_file}")
         base_hash = md5(base_file)
