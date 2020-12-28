@@ -1,12 +1,11 @@
+import hashlib
 import logging
+import os
 import shutil
 import sys
 import time
 
-import hashlib
-import os
 import requests
-import subprocess
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
 
