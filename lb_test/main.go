@@ -92,7 +92,6 @@ func (cl client) checkEquallyBalanced() {
 		os.Exit(102)
 	}
 	fmt.Print(result)
-
 }
 
 func (cl client) checkMultiple() {
@@ -110,7 +109,6 @@ func Run(address string, count int) {
 }
 
 func main() {
-
 	if len(os.Args) == 1 {
 		log.Panic("Server address argument is missing")
 	}
@@ -122,5 +120,4 @@ func main() {
 		count = 1000
 	}
 	Run(os.Args[1], count)
-
 }

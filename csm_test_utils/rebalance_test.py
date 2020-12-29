@@ -9,10 +9,10 @@ from .common import Client, base_parser, sub_parsers
 LB_DOWNTIME = "lb_down"
 
 
-def report(client: Client, ok, server=None):
+def report(client: Client, result, server=None):
     metrics = MetricCollection()
     lb_down = Metric(LB_DOWNTIME)
-    lb_down.add_tag("ok", ok)
+    lb_down.add_tag("result", result)
     if server is not None:
         lb_down.add_tag("server", server)
     lb_down.add_value("requests", 1)
@@ -58,13 +58,13 @@ def main(timeout: float):
             resp = requests.get(client.url, headers={"Connection": "close"}, timeout=1)
         except ConnectionError:  # one node is down
             success_count = 0
-            report(client, ok=False)
+            report(client, result=False)
         else:
             if resp.status_code == 200:
                 server = resp.headers["Server"]
                 success_count += 1
                 nodes.add(server)
-                report(client, ok=True, server=server)
+                report(client, result=True, server=server)
         _check_timeout(f"No re-balancing is done after {timeout} seconds. Nodes: {nodes}{exp_nodes}")
         time.sleep(0.5)
     print(f"LB rebalanced nodes: ({nodes})")
