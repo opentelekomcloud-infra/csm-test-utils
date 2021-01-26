@@ -23,6 +23,8 @@ CONTENT_TYPE = 'application/json;charset=utf8'
 
 def get_auth_token(endpoint, cloud_config, cloud_name):
     """Get auth token using data from clouds.yaml file. Token and project_id are returned as a string"""
+    token = None
+    project_id = None
     try:
         with open(cloud_config) as clouds_yaml:
             data = yaml.safe_load(clouds_yaml)
@@ -51,7 +53,7 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
         })
         url = "/".join([endpoint, API_VERSION, "auth/tokens"])
         try:
-            response = requests.post(url = url, data = request_body, headers = request_headers)
+            response = requests.post(url=url, data=request_body, headers=request_headers)
             token = response.headers.get('X-Subject-Token')
             project_id = response.json()['token']['project']['id']
         except requests.exceptions as ex:
