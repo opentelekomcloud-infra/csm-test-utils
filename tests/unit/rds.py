@@ -9,7 +9,7 @@ import psycopg2
 from docker import from_env
 from docker.models.containers import Container
 
-from rds.cli import DB_DICT, get_connection_dict, parse_args
+from csm_test_utils.rds_backup.fill_database.cli import DB_DICT, get_connection_dict, parse_args
 
 POSTGRES_IMAGE = 'postgres:10'
 POSTGRES_ADDRESS = 'postgres:5432'
