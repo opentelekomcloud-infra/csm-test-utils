@@ -5,7 +5,7 @@ from contextlib import closing
 import yaml
 from psycopg2 import Error, OperationalError, connect, sql
 
-from csm_test_utils.rds_backup.fill_database.base import BaseDB, logging_configuration
+from csm_test_utils.rds_backup.generation.base import BaseDB, logging_configuration
 
 __all__ = ['Pg2DB']
 

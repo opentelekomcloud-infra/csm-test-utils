@@ -5,8 +5,8 @@ from csm_test_utils.continuous_entities import main as rds_main
 from csm_test_utils.files_rotation import main as sfs_main
 from csm_test_utils.rebalance_test import main as r_main
 from csm_test_utils.dns import dns_lookup_main, host_main
-from csm_test_utils.rds_backup.backup_status_check import rds_backup_main
-from csm_test_utils.rds_backup.fill_database import fill_database_main
+from csm_test_utils.rds_backup.backup_check import rds_backup_main
+from csm_test_utils.rds_backup.generation import fill_database_main
 
 args = root_parser.parse_args()
 if args.test == "monitor":

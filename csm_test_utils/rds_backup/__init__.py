@@ -1,1 +1,2 @@
-from csm_test_utils.rds_backup.backup_status_check.rds_backup import main as rds_backup_main
+from .backup_check.rds_backup import main as backup_status
+from .generation.cli import main as generation

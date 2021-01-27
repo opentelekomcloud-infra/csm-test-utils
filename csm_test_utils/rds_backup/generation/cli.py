@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, Namespace
 
-from csm_test_utils.rds_backup.fill_database.pg2.db_methods import Pg2DB
-from csm_test_utils.rds_backup.fill_database.sqla.db_methods import AlchemyDB
+from .pg2.db_methods import Pg2DB
+from .sqla.db_methods import AlchemyDB
 
 
 def parse_args(args: list = None):

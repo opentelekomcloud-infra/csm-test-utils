@@ -8,7 +8,7 @@ from psycopg2 import Error
 from sqlalchemy import create_engine
 from sqlalchemy.engine import url
 
-from csm_test_utils.rds_backup.fill_database.base import BaseDB, logging_configuration
+from csm_test_utils.rds_backup.generation.base import BaseDB, logging_configuration
 from .db_model import TestRdsTable
 from .session import get_session
 
