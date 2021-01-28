@@ -27,5 +27,5 @@ if args.test == "internal_dns_host_check":
     host_main()
 if args.test == "rds_backup_monitor":
     rds_backup_main()
-if args.test == "lb_monitor":
+if args.test == "lb_load":
     lb_monitor()
