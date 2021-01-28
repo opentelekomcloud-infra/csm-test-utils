@@ -6,6 +6,7 @@ from csm_test_utils.files_rotation import main as sfs_main
 from csm_test_utils.rebalance_test import main as r_main
 from csm_test_utils.dns import dns_lookup_main, host_main
 from csm_test_utils.rds import rds_backup_main
+from csm_test_utils.loadbalancer import lb_monitor
 
 args = root_parser.parse_args()
 if args.test == "monitor":
@@ -26,3 +27,5 @@ if args.test == "internal_dns_host_check":
     host_main()
 if args.test == "rds_backup_monitor":
     rds_backup_main()
+if args.test == "lb_monitor":
+    lb_monitor()
