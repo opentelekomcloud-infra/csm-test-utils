@@ -2,7 +2,9 @@ from argparse import ArgumentParser, Namespace
 
 from .pg2.db_methods import Pg2DB
 from .sqla.db_methods import AlchemyDB
+from csm_test_utils.common import base_parser, sub_parsers
 
+AGP = sub_parsers.add_parser("rds_backup_generate_data", add_help=False, parents=[base_parser])
 
 def parse_args(args: list = None):
     """Parse common parameters"""
