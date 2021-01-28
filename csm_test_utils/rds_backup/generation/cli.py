@@ -5,20 +5,14 @@ from .sqla.db_methods import AlchemyDB
 from csm_test_utils.common import base_parser, sub_parsers
 
 AGP = sub_parsers.add_parser("rds_backup_generate_data", add_help=False, parents=[base_parser])
-
-def parse_args(args: list = None):
-    """Parse common parameters"""
-    parser = ArgumentParser(prog='customer-service-monitoring',
-                            description='Get data for connection string')
-    parser.add_argument('--run_option', dest='run_option', required=True, choices=['pg2', 'sqla'])
-    parser.add_argument('--source', required=True)
-    parser.add_argument('--host', required=True)
-    parser.add_argument('--port', required=True)
-    parser.add_argument('--database', '-db', default='entities')
-    parser.add_argument('--username', '-user', required=True)
-    parser.add_argument('--password', '-pass', required=True)
-    parser.add_argument('--drivername', default='postgresql+psycopg2')
-    return parser.parse_known_args(args)
+AGP.add_argument('--run_option', dest='run_option', required=True, choices=['pg2', 'sqla'])
+AGP.add_argument('--source', required=True)
+AGP.add_argument('--host', required=True)
+AGP.add_argument('--port', required=True)
+AGP.add_argument('--database', '-db', default='entities')
+AGP.add_argument('--username', '-user', required=True)
+AGP.add_argument('--password', '-pass', required=True)
+AGP.add_argument('--drivername', default='postgresql+psycopg2')
 
 
 def get_connection_dict(args: Namespace) -> dict:
@@ -44,7 +38,7 @@ DB_DICT = {
 
 
 def main():
-    args, _ = parse_args()
+    args, _ = AGP.parse_known_args()
     connection = get_connection_dict(args)
     db = DB_DICT[args.run_option](connection)
     db.run_test(args.source)
