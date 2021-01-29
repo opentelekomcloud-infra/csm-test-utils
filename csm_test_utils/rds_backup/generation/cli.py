@@ -1,8 +1,8 @@
 from argparse import Namespace
 
+from csm_test_utils.common import base_parser, sub_parsers
 from .pg2.db_methods import Pg2DB
 from .sqla.db_methods import AlchemyDB
-from csm_test_utils.common import base_parser, sub_parsers
 
 AGP = sub_parsers.add_parser("rds_backup_generate_data", add_help=False, parents=[base_parser])
 AGP.add_argument('--run_option', dest='run_option', required=True, choices=['pg2', 'sqla'])
