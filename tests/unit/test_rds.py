@@ -8,9 +8,8 @@ from contextlib import closing
 import psycopg2
 from docker import from_env
 from docker.models.containers import Container
-from argparse import ArgumentParser
 
-from csm_test_utils.rds_backup.generation.cli import DB_DICT, get_connection_dict
+from csm_test_utils.rds_backup.generation.cli import AGP, DB_DICT, get_connection_dict
 
 POSTGRES_IMAGE = 'postgres:10'
 POSTGRES_ADDRESS = 'postgres:5432'
@@ -24,21 +23,6 @@ def _rand_short_str():
 
 def _arg_dict_to_list(args: dict):
     return sum([[f'{k}', f'{v}'] for k, v in args.items()], [])
-
-
-def parse_args(args: list = None):
-    """Parse common parameters"""
-    parser = ArgumentParser(prog='customer-service-monitoring',
-                            description='Get data for connection string for test')
-    parser.add_argument('--run_option', dest='run_option', required=True, choices=['pg2', 'sqla'])
-    parser.add_argument('--source', required=True)
-    parser.add_argument('--host', required=True)
-    parser.add_argument('--port', required=True)
-    parser.add_argument('--database', '-db', default='entities')
-    parser.add_argument('--username', '-user', required=True)
-    parser.add_argument('--password', '-pass', required=True)
-    parser.add_argument('--drivername', default='postgresql+psycopg2')
-    return parser.parse_known_args(args)
 
 
 class TestRDS(unittest.TestCase):
@@ -122,8 +106,8 @@ class TestRDS(unittest.TestCase):
         with closing(psycopg2.connect(**conn)) as connection:
             connection.autocommit = True
             with connection.cursor() as cur:
-                cur.execute('select pg_terminate_backend(pid) '	
-                            'from pg_stat_activity '	
+                cur.execute('select pg_terminate_backend(pid) '
+                            'from pg_stat_activity '
                             f'where pg_stat_activity.datname = \'{self.db_name}\'')
             with connection.cursor() as cur:
                 cur.execute(f'drop DATABASE {self.db_name}')
@@ -135,7 +119,7 @@ class TestRDS(unittest.TestCase):
             **self.common_arg_dict
         }
         try:
-            args, _ = parse_args(_arg_dict_to_list(args_dict))
+            args, _ = AGP.parse_known_args(_arg_dict_to_list(args_dict))
         except SystemExit as sys_ex:
             raise AssertionError('Failed to parse arguments') from sys_ex
         connection = get_connection_dict(args)
