@@ -3,7 +3,7 @@ import uuid
 from contextlib import closing
 
 import yaml
-from psycopg2 import Error, OperationalError, connect, sql
+from psycopg2 import OperationalError, connect, sql
 
 from csm_test_utils.rds_backup.generation.base import BaseDB, logging_configuration
 
