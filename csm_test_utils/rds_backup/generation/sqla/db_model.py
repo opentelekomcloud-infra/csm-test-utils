@@ -7,7 +7,9 @@ Base = declarative_base()
 
 
 class TestRdsTable(Base):
+
     __tablename__ = str(uuid.uuid4())
+
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     content = Column(Text)
 

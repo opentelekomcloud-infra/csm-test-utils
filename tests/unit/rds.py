@@ -8,8 +8,9 @@ from contextlib import closing
 import psycopg2
 from docker import from_env
 from docker.models.containers import Container
+from argparse import ArgumentParser
 
-from csm_test_utils.rds_backup.generation.cli import DB_DICT, get_connection_dict, parse_args
+from csm_test_utils.rds_backup.generation.cli import DB_DICT, get_connection_dict
 
 POSTGRES_IMAGE = 'postgres:10'
 POSTGRES_ADDRESS = 'postgres:5432'
@@ -23,6 +24,21 @@ def _rand_short_str():
 
 def _arg_dict_to_list(args: dict):
     return sum([[f'{k}', f'{v}'] for k, v in args.items()], [])
+
+
+def parse_args(args: list = None):
+    """Parse common parameters"""
+    parser = ArgumentParser(prog='customer-service-monitoring',
+                            description='Get data for connection string for test')
+    parser.add_argument('--run_option', dest='run_option', required=True, choices=['pg2', 'sqla'])
+    parser.add_argument('--source', required=True)
+    parser.add_argument('--host', required=True)
+    parser.add_argument('--port', required=True)
+    parser.add_argument('--database', '-db', default='entities')
+    parser.add_argument('--username', '-user', required=True)
+    parser.add_argument('--password', '-pass', required=True)
+    parser.add_argument('--drivername', default='postgresql+psycopg2')
+    return parser.parse_known_args(args)
 
 
 class TestRDS(unittest.TestCase):

@@ -1,4 +1,4 @@
-from argparse import ArgumentParser, Namespace
+from argparse import Namespace
 
 from .pg2.db_methods import Pg2DB
 from .sqla.db_methods import AlchemyDB

@@ -15,18 +15,15 @@ class Pg2DB(BaseDB):
 
     def _execute_sql(self, sql_query):
         res = []
-        try:
-            with closing(connect(**self.connection)) as connection:
-                try:
-                    with connection.cursor() as cursor:
-                        cursor.execute(sql_query)
-                        if cursor.description is not None:
-                            res = cursor.fetchall()
-                except OperationalError:
-                    logging.exception('Exception occurred when try to execute SQL')
-                connection.commit()
-        except Error:
-            logging.exception('Connection error occurred')
+        with closing(connect(**self.connection)) as connection:
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(sql_query)
+                    if cursor.description is not None:
+                        res = cursor.fetchall()
+            except OperationalError:
+                logging.exception('Exception occurred when try to execute SQL')
+            connection.commit()
         return res
 
     def _create_table(self, schema_name: str, table_name: str, *columns):
