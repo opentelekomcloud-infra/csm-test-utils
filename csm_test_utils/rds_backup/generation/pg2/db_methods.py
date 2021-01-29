@@ -75,5 +75,6 @@ class Pg2DB(BaseDB):
             self.fill_table_by_random_values(
                 schema_name, table_name, range_start, range_end, 'content')
             range_start = range_end + 1
+            logging.info('Commit session')
 
         logging.info('Script finished')

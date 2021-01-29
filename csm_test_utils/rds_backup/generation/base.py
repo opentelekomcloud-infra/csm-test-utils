@@ -1,13 +1,15 @@
 import logging
 import os
 
+BASE_DIR = '/tmp/rds'
+LOG_PATH = f'{BASE_DIR}/rds_log.log'
+
 
 def logging_configuration():
     """Basic configuration for logging"""
-    base_dir = '/tmp/rds'
-    os.makedirs(base_dir, exist_ok=True)
+    os.makedirs(BASE_DIR, exist_ok=True)
     return logging.basicConfig(
-        filename=f'{base_dir}/rds_logs.log',
+        filename=LOG_PATH,
         filemode='w',
         level=logging.DEBUG,
         format='%(levelname)s:%(asctime)s:%(message)s')

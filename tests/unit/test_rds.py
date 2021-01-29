@@ -10,12 +10,14 @@ from docker import from_env
 from docker.models.containers import Container
 
 from csm_test_utils.rds_backup.generation.cli import AGP, DB_DICT, get_connection_dict
+from csm_test_utils.rds_backup.generation.base import LOG_PATH
 
 POSTGRES_IMAGE = 'postgres:10'
 POSTGRES_ADDRESS = 'postgres:5432'
 DB_CONFIG_FILE = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'rds_test_config.yaml'))
 
+LOG_STRING_COMMIT = 'Commit session'
 
 def _rand_short_str():
     return ''.join(random.choice(string.ascii_lowercase) for _ in range(6))
@@ -23,6 +25,15 @@ def _rand_short_str():
 
 def _arg_dict_to_list(args: dict):
     return sum([[f'{k}', f'{v}'] for k, v in args.items()], [])
+
+
+def check_if_string_in_file(file_name, string_to_search):
+    """ Check if any line in the file contains given string """
+    with open(file_name, 'r') as read_obj:
+        for line in read_obj:
+            if string_to_search in line:
+                return True
+    return False
 
 
 class TestRDS(unittest.TestCase):
@@ -125,6 +136,7 @@ class TestRDS(unittest.TestCase):
         connection = get_connection_dict(args)
         alchemy = DB_DICT[option](connection)
         alchemy.run_test(args.source)
+        assert check_if_string_in_file(LOG_PATH, LOG_STRING_COMMIT)
 
     def test_pg2(self):
         self._db_run('pg2')
