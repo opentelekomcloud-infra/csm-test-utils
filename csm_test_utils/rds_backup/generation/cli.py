@@ -4,7 +4,7 @@ from csm_test_utils.common import base_parser, sub_parsers
 from .pg2.db_methods import Pg2DB
 from .sqla.db_methods import AlchemyDB
 
-AGP = sub_parsers.add_parser("rds_backup_generate_data", add_help=False, parents=[base_parser])
+AGP = sub_parsers.add_parser('rds_backup_generate_data', add_help=False, parents=[base_parser])
 AGP.add_argument('--run_option', dest='run_option', required=True, choices=['pg2', 'sqla'])
 AGP.add_argument('--source', required=True)
 AGP.add_argument('--host', required=True)
@@ -32,12 +32,13 @@ def get_connection_dict(args: Namespace) -> dict:
 
 
 DB_DICT = {
-    "pg2": Pg2DB,
-    "sqla": AlchemyDB
+    'pg2': Pg2DB,
+    'sqla': AlchemyDB
 }
 
 
 def main():
+    """Main function for getting connection to database and running test"""
     args, _ = AGP.parse_known_args()
     connection = get_connection_dict(args)
     db = DB_DICT[args.run_option](connection)

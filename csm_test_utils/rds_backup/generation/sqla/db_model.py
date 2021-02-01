@@ -6,7 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class TestRdsTable(Base):
+class TestRdsTable(Base):  # noqa R0903
+    """Class representing a model of database for ORM"""
 
     __tablename__ = str(uuid.uuid4())
 

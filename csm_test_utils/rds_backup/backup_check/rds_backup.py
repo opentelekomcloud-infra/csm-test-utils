@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import logging
 
 import requests
@@ -9,9 +9,9 @@ from requests import Response
 
 from csm_test_utils.common import Client, base_parser, sub_parsers
 
-API_VERSION = "v3"
-RDS_BACKUP = "rds_backup_monitor"
-CSM_EXCEPTION = "csm_exception"
+API_VERSION = 'v3'
+RDS_BACKUP = 'rds_backup_monitor'
+CSM_EXCEPTION = 'csm_exception'
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 CONTENT_TYPE = 'application/json;charset=utf8'
@@ -99,11 +99,11 @@ def report(client: Client, endpoint: str, token: str, project_id: str, **request
             influx_row.add_tag("reason", "fail")
             influx_row.add_value("elapsed", target_req.elapsed.seconds)
             collection.append(influx_row)
-    except requests.RequestException as Error:
+    except requests.RequestException as error:
         influx_row = Metric(CSM_EXCEPTION)
         influx_row.add_tag("Reporter", RDS_BACKUP)
         influx_row.add_tag("Status", "RDS Unavailable")
-        influx_row.add_value("Value", Error)
+        influx_row.add_value("Value", error)
         collection.append(influx_row)
         client.report_metric(collection)
 

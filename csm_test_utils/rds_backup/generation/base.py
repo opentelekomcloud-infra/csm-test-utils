@@ -20,12 +20,14 @@ class BaseDB:
 
     def __init__(self, connection: dict):
         self.connection = connection
-        self.database = connection["database"]
+        self.database = connection['database']
 
     def _execute_sql(self, sql_query):
+        """Execute sql query"""
         raise NotImplementedError
 
     def get_database_size(self) -> int:
+        """Get database size"""
         raise NotImplementedError
 
     def is_database_fulfilled(self, db_max_size: int) -> bool:
@@ -33,4 +35,5 @@ class BaseDB:
         return self.get_database_size() >= db_max_size
 
     def run_test(self, src_file: str):
+        """Fill database with a data"""
         raise NotImplementedError
