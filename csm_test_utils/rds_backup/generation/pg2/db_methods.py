@@ -60,10 +60,10 @@ class Pg2DB(BaseDB):
         get_size_query = model_query.format(sql.Literal(self.database))
         return self._execute_sql(get_size_query)[0][0]
 
-    def run_test(self, src: str):
+    def run_test(self, src_file: str):
         logging_configuration()
         logging.info('Script starts')
-        with open(src) as data_file:
+        with open(src_file) as data_file:
             data = yaml.safe_load(data_file)
         count = data['record_count']
         range_start = 0

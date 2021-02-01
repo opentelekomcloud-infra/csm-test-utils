@@ -1,5 +1,5 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import requests
 import yaml
@@ -50,7 +50,7 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
             }
         }
     }
-    url = "/".join([endpoint, API_VERSION, "auth/tokens"])
+    url = '/'.join([endpoint, API_VERSION, 'auth/tokens'])
     response = requests.post(url=url, json=data)
     if not response.ok:
         raise AuthFailed(response.text)
@@ -62,7 +62,7 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
 
 def get_rds_backup_info(endpoint: str, token: str, project_id: str, **request_params) -> Response:
     """Get full information about RDS backups"""
-    url = "/".join([endpoint, API_VERSION, project_id, "backups?"])
+    url = '/'.join([endpoint, API_VERSION, project_id, 'backups?'])
     request_headers = {'Content-Type': CONTENT_TYPE, 'X-Auth-Token': token}
     return requests.get(url=url, params=request_params, headers=request_headers)
 
@@ -75,7 +75,7 @@ def get_duration(start_time: str, end_time: str):
 
 def format_date_time(date_time: str) -> datetime:
     """Format date and time"""
-    return datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z")
+    return datetime.strptime(date_time, '%Y-%m-%dT%H:%M:%S%z')
 
 
 def report(client: Client, endpoint: str, token: str, project_id: str, **request_params):
@@ -85,49 +85,50 @@ def report(client: Client, endpoint: str, token: str, project_id: str, **request
     try:
         target_req = get_rds_backup_info(endpoint, token, project_id, **request_params)
         if target_req.ok:
-            backups = target_req.json()["backups"]
+            backups = target_req.json()['backups']
             for backup in backups:
-                influx_row.add_tag("id_backup", backup["id"])
-                influx_row.add_tag("status", backup["status"])
-                influx_row.add_tag("size", backup["size"])
-                influx_row.add_value("backup_duration",
-                                     get_duration(backup["begin_time"], backup["end_time"]))
+                influx_row.add_tag('id_backup', backup['id'])
+                influx_row.add_tag('status', backup['status'])
+                influx_row.add_tag('size', backup['size'])
+                influx_row.add_value('backup_duration',
+                                     get_duration(backup['begin_time'], backup['end_time']))
                 collection.append(influx_row)
         else:
-            influx_row.add_tag("status", "request_failed")
-            influx_row.add_tag("host", "rds_backup")
-            influx_row.add_tag("reason", "fail")
-            influx_row.add_value("elapsed", target_req.elapsed.seconds)
+            influx_row.add_tag('status', 'request_failed')
+            influx_row.add_tag('host', 'rds_backup')
+            influx_row.add_tag('reason', 'fail')
+            influx_row.add_value('elapsed', target_req.elapsed.seconds)
             collection.append(influx_row)
     except requests.RequestException as error:
         influx_row = Metric(CSM_EXCEPTION)
-        influx_row.add_tag("Reporter", RDS_BACKUP)
-        influx_row.add_tag("Status", "RDS Unavailable")
-        influx_row.add_value("Value", error)
+        influx_row.add_tag('Reporter', RDS_BACKUP)
+        influx_row.add_tag('Status', 'RDS Unavailable')
+        influx_row.add_value('Value', error)
         collection.append(influx_row)
         client.report_metric(collection)
 
 
 AGP = sub_parsers.add_parser(RDS_BACKUP, add_help=False, parents=[base_parser])
-AGP.add_argument("--instance_id", help="RDS instance ID")
-AGP.add_argument("--cloud_config", help="Clouds config file")
-AGP.add_argument("--cloud_name", help="Name of cloud")
-AGP.add_argument("--endpoint", help="Endpoint")
+AGP.add_argument('--instance_id', help='RDS instance ID')
+AGP.add_argument('--cloud_config', help='Clouds config file')
+AGP.add_argument('--cloud_name', help='Name of cloud')
+AGP.add_argument('--endpoint', help='Endpoint')
 
 
 def main():
+    """Main function for """
     args, _ = AGP.parse_known_args()
     request_params = {'instance_id': args.instance_id, 'backup_type': 'auto'}
     client = Client(args.target, args.telegraf)
-    setup_logger(LOGGER, "rds_backup_monitor", log_dir=args.log_dir,
-                 log_format="[%(asctime)s] %(message)s")
-    LOGGER.info(f"Started check of {client.url} (telegraf at {client.tgf_address})")
+    setup_logger(LOGGER, 'rds_backup_monitor', log_dir=args.log_dir,
+                 log_format='[%(asctime)s] %(message)s')
+    LOGGER.info(f'Started check of {client.url} (telegraf at {client.tgf_address})')
 
-    LOGGER.info("Generate token")
+    LOGGER.info('Generate token')
     token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
-    LOGGER.info("Check status")
+    LOGGER.info('Check status')
     report(client, args.endpoint, token, project_id, **request_params)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
