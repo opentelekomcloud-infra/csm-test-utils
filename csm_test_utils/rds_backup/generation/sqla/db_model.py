@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class TestRdsTable(Base):  # noqa R0903
+class TestRdsTable(Base):  # pylint: disable=too-few-public-methods
     """Class representing a model of database for ORM"""
 
     __tablename__ = str(uuid.uuid4())

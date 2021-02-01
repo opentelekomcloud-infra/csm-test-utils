@@ -122,7 +122,7 @@ def main():
     client = Client(args.target, args.telegraf)
     setup_logger(LOGGER, 'rds_backup_monitor', log_dir=args.log_dir,
                  log_format='[%(asctime)s] %(message)s')
-    LOGGER.info(f'Started check of {client.url} (telegraf at {client.tgf_address})')
+    LOGGER.info('Started check of %d (telegraf at %d)', client.url, client.tgf_address)
 
     LOGGER.info('Generate token')
     token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
