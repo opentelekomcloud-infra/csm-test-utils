@@ -6,7 +6,6 @@ import time
 import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
-from requests import Timeout
 
 from .common import Client, base_parser, sub_parsers
 
@@ -23,12 +22,12 @@ def get(client: Client):
     metrics = MetricCollection()
     try:
         res = requests.get(client.url, headers={"Connection": "close"}, timeout=timeout)
-    except Exception as Ex:
+    except requests.RequestException as err:
         LOGGER.exception("Timeout sending request to LB")
         lb_timeout = Metric(LB_TIMEOUT)
         lb_timeout.add_tag("client", client.host_name)
         lb_timeout.add_value("timeout", timeout * 1000)
-        lb_timeout.add_value("exception", Ex)
+        lb_timeout.add_value("exception", err)
         metrics.append(lb_timeout)
     else:
         lb_timing = Metric(LB_TIMING)
@@ -47,13 +46,13 @@ def main():
     args, _ = AGP.parse_known_args()
     setup_logger(LOGGER, "continuous", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
     client = Client(args.target, args.telegraf)
-    LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
+    LOGGER.info("Started monitoring of %s (telegraf at %s)", client.url, client.tgf_address)
     while True:
         try:
             get(client)
             time.sleep(0.5)
         except KeyboardInterrupt:
-            LOGGER.info("Monitoring Stopped")
+            LOGGER.info("Monitoring \"monitor\" Stopped")
             sys.exit(0)
 
 
