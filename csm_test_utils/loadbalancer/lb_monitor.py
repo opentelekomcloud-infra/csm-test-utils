@@ -21,7 +21,7 @@ def main():
     timeout = 20
     try:
         res = requests.get(args.target, headers={"Connection": "close"}, timeout=timeout)
-    except Exception as ex:
+    except requests.Timeout as ex:
         LOGGER.exception("Timeout sending request to LB")
         result = {
             "reason": LB_TIMEOUT,
