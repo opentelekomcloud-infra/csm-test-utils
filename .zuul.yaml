@@ -1,10 +1,18 @@
+- job:
+    name: tox-cover-docker
+    parent: tox-cover
+    nodeset: debian-buster
+    pre-run: ./tests/docker/pre.yaml
+
 - project:
     merge-mode: squash-merge
     templates:
       - publish-to-pypi
     check:
       jobs:
+        - tox-cover-docker
         - otc-tox-pep8
     gate:
       jobs:
+        - tox-cover-docker
         - otc-tox-pep8
