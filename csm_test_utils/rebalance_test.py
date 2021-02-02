@@ -2,7 +2,7 @@ import time
 
 import requests
 from influx_line_protocol import Metric, MetricCollection
-from requests.exceptions import ConnectionError  # pylint: disable=W0622
+from requests.exceptions import ConnectionError  # pylint: disable=redefined-builtin
 
 from .common import Client, base_parser, sub_parsers
 
@@ -35,9 +35,9 @@ def main(timeout: float):
 
     end_time = time.monotonic() + 3
 
+                            # max number of consecutive successful
+    max_success_count = 20  # requests to consider downtime finished
 
-    max_success_count = 20  # max number of consecutive successful \
-                            # requests to consider downtime finished
     success_count = 0
     end_time = time.monotonic() + timeout
     print("Started waiting for loadbalancer to re-balance nodes")
@@ -67,8 +67,8 @@ def main(timeout: float):
                 success_count += 1
                 nodes.add(server)
                 report(client, ok=True, server=server)
-        _check_timeout(f"No re-balancing is done after {timeout} seconds. \
-                                                    Nodes: {nodes}{exp_nodes}", end_time)
+        _check_timeout(f"No re-balancing is done after {timeout} seconds. "
+                       f"Nodes: {nodes}{exp_nodes}", end_time)
         time.sleep(0.5)
     print(f"LB rebalanced nodes: ({nodes})")
 
