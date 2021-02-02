@@ -7,7 +7,8 @@ from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
 from requests import Timeout
 
-from ..common import base_parser, sub_parsers, Client
+from csm_test_utils.parsers import AGP_DNS_HOST_CHECK
+from ..common import Client
 
 INT_DNS_TIMING = "int_dns_timing"
 INT_DNS_TIMEOUT = "int_dns_timeout"
@@ -15,9 +16,6 @@ collection = MetricCollection()
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
-
-AGP = sub_parsers.add_parser("internal_dns_host_check", add_help=False, parents=[base_parser])
-AGP.add_argument("--dns_name", help="dns name of server to resolve", type=str)
 
 
 def get_client_response(client: Client):
@@ -40,7 +38,7 @@ def get_client_response(client: Client):
 
 
 def main():
-    args, _ = AGP.parse_known_args()
+    args, _ = AGP_DNS_HOST_CHECK.parse_known_args()
     setup_logger(LOGGER, "int_dns_host_check", log_dir=args.log_dir,
                  log_format="[%(asctime)s] %(message)s")
     client = Client(args.dns_name, args.telegraf)

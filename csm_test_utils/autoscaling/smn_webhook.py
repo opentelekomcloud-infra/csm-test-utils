@@ -6,7 +6,7 @@ import requests
 from flask import Flask, jsonify, request
 from influx_line_protocol import Metric, MetricCollection
 
-from ..common import base_parser, sub_parsers
+from ..parsers import AGP_AS_MONITOR
 
 app = Flask(__name__)
 
@@ -37,9 +37,7 @@ def report(response_body):
     assert res.status_code == 204, f"Status is {res.status_code}"
 
 
-AGP = sub_parsers.add_parser("as_monitor", add_help=False, parents=[base_parser])
-AGP.add_argument("--port", help="port to be listened", default=23456, type=int)
-args, _ = AGP.parse_known_args()
+args, _ = AGP_AS_MONITOR.parse_known_args()
 
 
 def main():

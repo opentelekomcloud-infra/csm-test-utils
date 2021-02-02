@@ -1,6 +1,6 @@
 from importlib import import_module
 
-from csm_test_utils.common import root_parser
+from csm_test_utils.parsers import root_parser
 
 entry_points = {
     "monitor": "csm_test_utils.continuous",
@@ -22,7 +22,7 @@ def main():
     import_path = entry_points[args.test]
     module = import_module(import_path)
     main_fnc = getattr(module, "main")
-    if args.dry:
+    if not args.dry:
         main_fnc()
 
 

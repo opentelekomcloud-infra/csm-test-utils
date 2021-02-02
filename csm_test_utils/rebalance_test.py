@@ -4,7 +4,8 @@ import requests
 from influx_line_protocol import Metric, MetricCollection
 from requests.exceptions import ConnectionError  # pylint: disable=redefined-builtin
 
-from .common import Client, base_parser, sub_parsers
+from .common import Client
+from .parsers import AGP_REBALANCE
 
 LB_DOWNTIME = "lb_down"
 
@@ -20,22 +21,19 @@ def report(client: Client, ok, server=None):
     client.report_metric(metrics)
 
 
-AGP = sub_parsers.add_parser("rebalance", add_help=False, parents=[base_parser])
-AGP.add_argument("--nodes", type=int, default=None, help="Expected number of nodes")
-
-
 def _check_timeout(msg, end_time):
     if time.monotonic() > end_time:
         raise TimeoutError(msg)
 
+
 def main(timeout: float):
     """Find unavailable node and waits until it won't be used"""
-    args, _ = AGP.parse_known_args()
+    args, _ = AGP_REBALANCE.parse_known_args()
     client = Client(args.target, args.telegraf)
 
     end_time = time.monotonic() + 3
 
-                            # max number of consecutive successful
+    # max number of consecutive successful
     max_success_count = 20  # requests to consider downtime finished
 
     success_count = 0

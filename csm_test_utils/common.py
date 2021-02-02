@@ -1,26 +1,10 @@
-import os
 import re
 import socket
-from argparse import ArgumentParser
 from threading import Thread
 
 import requests
 from influx_line_protocol import MetricCollection
 from requests import Timeout
-
-base_parser = ArgumentParser(prog="csm_test_utils", description="Multi-purpose test script")
-
-base_parser.add_argument("--target", help="Load balancer address")
-__tgf_default = os.getenv("TGF_ADDRESS", "")
-base_parser.add_argument("--telegraf",
-                         help=f"Address of telegraf server for reporting. "
-                              f"Default is taken from TGF_ADDRESS variable ('{__tgf_default}')",
-                         default=__tgf_default)
-base_parser.add_argument("--log-dir", "-l", help="Directory to write log file to.", default=".")
-
-root_parser = ArgumentParser(parents=[base_parser], add_help=False)
-root_parser.add_argument("--dry", action="store_true", help="Validate test without running")
-sub_parsers = root_parser.add_subparsers(dest="test", required=True, help="Test to be run")
 
 RE_URL = re.compile(r"^https?://.+$")
 

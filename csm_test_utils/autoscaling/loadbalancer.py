@@ -7,7 +7,8 @@ import requests
 from influx_line_protocol import Metric
 from ocomone.logging import setup_logger
 
-from ..common import Client, base_parser, sub_parsers
+from ..common import Client
+from ..parsers import AGP_AS_LB
 
 AS_LOADBALANCER = "as_loadbalancer"
 CSM_EXCEPTION = "csm_exception"
@@ -40,14 +41,12 @@ def report(client: Client):
         return
     client.report_metric(influx_row)
 
-AGP = sub_parsers.add_parser("as_load", add_help=False, parents=[base_parser])
-
 
 def main():
     """Start monitoring loadbalancer"""
-    args, _ = AGP.parse_known_args()
-    setup_logger(LOGGER, "lb_continuous", log_dir=args.log_dir,\
-                                            log_format="[%(asctime)s] %(message)s")
+    args, _ = AGP_AS_LB.parse_known_args()
+    setup_logger(LOGGER, "lb_continuous", log_dir=args.log_dir,
+                 log_format="[%(asctime)s] %(message)s")
     client = Client(args.target, args.telegraf)
     LOGGER.info("Started monitoring of %d (telegraf at %d)", client.url, client.tgf_address)
     while True:
