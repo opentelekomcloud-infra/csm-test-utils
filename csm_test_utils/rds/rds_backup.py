@@ -7,11 +7,10 @@ import requests
 import yaml
 from influx_line_protocol import Metric, MetricCollection
 from ocomone import setup_logger
-from requests import Response, HTTPError
-from datetime import datetime
+from requests import HTTPError, Response
 
-from ..parsers import AGP_RDS_BACKUP
 from ..common import Client
+from ..parsers import AGP_RDS_BACKUP
 
 API_VERSION = "v3"
 RDS_BACKUP = "rds_backup_monitor"
@@ -117,7 +116,7 @@ def report(client: Client, endpoint: str, token: str, project_id: str, **request
 
 def main():
     args, _ = AGP_RDS_BACKUP.parse_known_args()
-    request_params = {"instance_id": args.instance_id, "backup_type": 'auto'}
+    request_params = {"instance_id": args.instance_id, "backup_type": "auto"}
     client = Client(args.target, args.telegraf)
     setup_logger(LOGGER, "rds_backup_monitor", log_dir=args.log_dir,
                  log_format="[%(asctime)s] %(message)s")
