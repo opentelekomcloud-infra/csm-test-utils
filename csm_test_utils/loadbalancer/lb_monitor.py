@@ -21,13 +21,13 @@ def main():
     timeout = 20
     try:
         res = requests.get(args.target, headers={"Connection": "close"}, timeout=timeout)
-    except Exception as Ex:
+    except Exception as ex:
         LOGGER.exception("Timeout sending request to LB")
         result = {
             "reason": LB_TIMEOUT,
             "client": socket.gethostname(),
             "timeout": timeout * 1000,
-            "exception": Ex
+            "exception": ex
         }
     else:
         result = {
