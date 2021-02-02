@@ -41,16 +41,15 @@ def get_client_response(client: Client):
 
 def main():
     args, _ = AGP.parse_known_args()
-    setup_logger(LOGGER, "int_dns_host_check", log_dir=args.log_dir,
-                 log_format="[%(asctime)s] %(message)s")
+    setup_logger(LOGGER, "int_dns_host_check", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
     client = Client(args.dns_name, args.telegraf)
-    LOGGER.info("Started monitoring of Internal DNS host (telegraf at %d)", args.telegraf)
+    LOGGER.info(f"Started monitoring of Internal DNS host (telegraf at {args.telegraf})")
     while True:
         try:
             get_client_response(client)
             time.sleep(5)
         except KeyboardInterrupt:
-            LOGGER.info("Monitoring \"internal_dns_host_check\" Stopped")
+            LOGGER.info("Monitoring Stopped")
             sys.exit(0)
 
 

@@ -10,9 +10,7 @@
       - publish-to-pypi
     check:
       jobs:
-        - otc-tox-pep8
         - tox-cover-docker
     gate:
       jobs:
-        - otc-tox-pep8
         - tox-cover-docker

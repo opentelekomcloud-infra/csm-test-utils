@@ -2,7 +2,7 @@ import time
 
 import requests
 from influx_line_protocol import Metric, MetricCollection
-from requests.exceptions import ConnectionError  # pylint: disable=redefined-builtin
+from requests.exceptions import ConnectionError
 
 from .common import Client, base_parser, sub_parsers
 
@@ -24,10 +24,6 @@ AGP = sub_parsers.add_parser("rebalance", add_help=False, parents=[base_parser])
 AGP.add_argument("--nodes", type=int, default=None, help="Expected number of nodes")
 
 
-def _check_timeout(msg, end_time):
-    if time.monotonic() > end_time:
-        raise TimeoutError(msg)
-
 def main(timeout: float):
     """Find unavailable node and waits until it won't be used"""
     args, _ = AGP.parse_known_args()
@@ -35,9 +31,11 @@ def main(timeout: float):
 
     end_time = time.monotonic() + 3
 
-                            # max number of consecutive successful
-    max_success_count = 20  # requests to consider downtime finished
+    def _check_timeout(msg):
+        if time.monotonic() > end_time:
+            raise TimeoutError(msg)
 
+    max_success_count = 20  # max number of consecutive successful requests to consider downtime finished
     success_count = 0
     end_time = time.monotonic() + timeout
     print("Started waiting for loadbalancer to re-balance nodes")
@@ -67,8 +65,7 @@ def main(timeout: float):
                 success_count += 1
                 nodes.add(server)
                 report(client, ok=True, server=server)
-        _check_timeout(f"No re-balancing is done after {timeout} seconds. "
-                       f"Nodes: {nodes}{exp_nodes}", end_time)
+        _check_timeout(f"No re-balancing is done after {timeout} seconds. Nodes: {nodes}{exp_nodes}")
         time.sleep(0.5)
     print(f"LB rebalanced nodes: ({nodes})")
 
