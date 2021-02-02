@@ -11,6 +11,8 @@
     check:
       jobs:
         - tox-cover-docker
+        - otc-tox-pep8
     gate:
       jobs:
         - tox-cover-docker
+        - otc-tox-pep8
