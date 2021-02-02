@@ -9,7 +9,7 @@ import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
 
-from csm_test_utils.parsers import AGP_SFS
+from .parsers import AGP_SFS
 
 SFS_COMPARE = "sfs_fcompare"
 

@@ -7,8 +7,8 @@ from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
 from requests import Timeout
 
-from csm_test_utils.parsers import AGP_DNS_HOST_CHECK
 from ..common import Client
+from ..parsers import AGP_DNS_HOST_CHECK
 
 INT_DNS_TIMING = "int_dns_timing"
 INT_DNS_TIMEOUT = "int_dns_timeout"

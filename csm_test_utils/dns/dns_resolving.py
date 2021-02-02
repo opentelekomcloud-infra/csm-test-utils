@@ -7,7 +7,7 @@ import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
 
-from csm_test_utils.parsers import AGP_DNS_RESOLVE
+from ..parsers import AGP_DNS_RESOLVE
 
 INT_DNS = "int_dns_resolving"
 

@@ -9,8 +9,8 @@ from influx_line_protocol import Metric, MetricCollection
 from ocomone.session import BaseUrlSession
 from ocomone.timer import Timer
 
-from csm_test_utils.parsers import AGP_RDS_MONITOR
 from .common import Client
+from .parsers import AGP_RDS_MONITOR
 
 
 def _rand_str():
