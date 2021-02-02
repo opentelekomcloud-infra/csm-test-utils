@@ -1,8 +1,6 @@
 import datetime
 import json
 import logging
-import sys
-import time
 from datetime import datetime
 
 import requests
@@ -24,41 +22,35 @@ CONTENT_TYPE = "application/json;charset=utf8"
 def get_auth_token(endpoint, cloud_config, cloud_name):
     """Get auth token using data from clouds.yaml file.
         Token and project_id are returned as a string"""
-    try:
-        with open(cloud_config) as clouds_yaml:
-            data = yaml.safe_load(clouds_yaml)
-        auth_data = data["clouds"][cloud_name]["auth"]
-        request_headers = {"Content-Type": CONTENT_TYPE}
-        request_body = json.dumps({
-            "auth": {
-                "identity": {
-                    "methods": ["password"],
-                    "password": {
-                        "user": {
-                            "name": auth_data["username"],
-                            "password": auth_data["password"],
-                            "domain": {
-                                "name": auth_data["domain_name"]
-                            }
+    with open(cloud_config) as clouds_yaml:
+        data = yaml.safe_load(clouds_yaml)
+    auth_data = data["clouds"][cloud_name]["auth"]
+    request_headers = {"Content-Type": CONTENT_TYPE}
+    request_body = json.dumps({
+        "auth": {
+            "identity": {
+                "methods": ["password"],
+                "password": {
+                    "user": {
+                        "name": auth_data["username"],
+                        "password": auth_data["password"],
+                        "domain": {
+                            "name": auth_data["domain_name"]
                         }
                     }
-                },
-                "scope": {
-                    "project": {
-                        "name": auth_data["project_name"]
-                    }
+                }
+            },
+            "scope": {
+                "project": {
+                    "name": auth_data["project_name"]
                 }
             }
-        })
-        url = "/".join([endpoint, API_VERSION, "auth/tokens"])
-        try:
-            response = requests.post(url=url, data=request_body, headers=request_headers)
-            token = response.headers.get("X-Subject-Token")
-            project_id = response.json()["token"]["project"]["id"]
-        except requests.exceptions as ex:  # pylint: disable=catching-non-exception
-            LOGGER.exception(ex)
-    except Exception as ex:  # pylint: disable=broad-except
-        LOGGER.exception(ex)
+        }
+    })
+    url = "/".join([endpoint, API_VERSION, "auth/tokens"])
+    response = requests.post(url=url, data=request_body, headers=request_headers)
+    token = response.headers.get("X-Subject-Token")
+    project_id = response.json()["token"]["project"]["id"]
     return token, project_id
 
 
@@ -66,10 +58,7 @@ def get_rds_backup_info(endpoint: str, token: str, project_id: str, **request_pa
     """Get full information about RDS backups"""
     url = "/".join([endpoint, API_VERSION, project_id, "backups?"])
     request_headers = {"Content-Type": CONTENT_TYPE, "X-Auth-Token": token}
-    try:
-        response = requests.get(url=url, params=request_params, headers=request_headers)
-    except requests.exceptions as ex:  # pylint: disable=catching-non-exception
-        LOGGER.exception(ex)
+    response = requests.get(url=url, params=request_params, headers=request_headers)
     return response
 
 
@@ -88,10 +77,7 @@ def get_rds_backup_status(endpoint: str, token: str, project_id: str,
                           instance_id: str, backup_type: str) -> Response:
     """Return RDS backup status"""
     request_params = {"instance_id": instance_id, "backup_type": backup_type}
-    try:
-        response = get_rds_backup_info(endpoint, token, project_id, **request_params)
-    except requests.exceptions as ex:  # pylint: disable=catching-non-exception
-        LOGGER.exception(ex)
+    response = get_rds_backup_info(endpoint, token, project_id, **request_params)
     return response
 
 
@@ -122,9 +108,6 @@ def report(client: Client, endpoint: str, token: str, project_id: str, **request
         influx_row.add_tag("Status", "RDS Unavailable")
         influx_row.add_value("Value", error)
         collection.append(influx_row)
-    except Exception as ex:  # pylint: disable=broad-except
-        LOGGER.exception(ex)
-        return
     client.report_metric(collection)
 
 
@@ -142,16 +125,12 @@ def main():
     setup_logger(LOGGER, "rds_backup_monitor", log_dir=args.log_dir,
                  log_format="[%(asctime)s] %(message)s")
     LOGGER.info("Started monitoring of %d (telegraf at %d)", client.url, client.tgf_address)
-    while True:
-        try:
-            LOGGER.info("Generate token")
-            token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
-            LOGGER.info("Monitoring")
-            report(client, args.endpoint, token, project_id, **request_params)
-            time.sleep(3600)
-        except KeyboardInterrupt:
-            LOGGER.info("Monitoring \"rds_backup_monitor\" Stopped")
-            sys.exit(0)
+    LOGGER.info("Generate token")
+    token, project_id = get_auth_token(args.endpoint, args.cloud_config, args.cloud_name)
+    LOGGER.info("Monitoring")
+    report(client, args.endpoint, token, project_id, **request_params)
+
+
 
 
 if __name__ == "__main__":
