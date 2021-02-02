@@ -10,7 +10,8 @@ import yaml
 from docker import from_env
 from docker.models.containers import Container
 
-from csm_test_utils.rds_backup.generation.cli import AGP, DB_DICT, get_connection_dict
+from csm_test_utils.parsers import AGP_RDS_GENERATE
+from csm_test_utils.rds_backup.generation.cli import DB_DICT, get_connection_dict
 
 POSTGRES_IMAGE = 'postgres:10'
 POSTGRES_ADDRESS = 'postgres:5432'
@@ -126,7 +127,7 @@ class TestRDS(unittest.TestCase):
             **self.common_arg_dict
         }
         try:
-            args, _ = AGP.parse_known_args(_arg_dict_to_list(args_dict))
+            args, _ = AGP_RDS_GENERATE.parse_known_args(_arg_dict_to_list(args_dict))
         except SystemExit as sys_ex:
             raise AssertionError('Failed to parse arguments') from sys_ex
         connection = get_connection_dict(args)
