@@ -52,7 +52,7 @@ def main():
             get(client)
             time.sleep(0.5)
         except KeyboardInterrupt:
-            LOGGER.info("Monitoring Stopped")
+            LOGGER.info("Monitoring \"monitor\" Stopped")
             sys.exit(0)
 
 

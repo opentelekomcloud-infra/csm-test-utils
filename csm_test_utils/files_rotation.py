@@ -85,7 +85,7 @@ def main():
             report(args)
             time.sleep(60)
         except KeyboardInterrupt:
-            LOGGER.info("Monitoring Stopped")
+            LOGGER.info("Monitoring \"sfs_compare\" Stopped")
             sys.exit(0)
 
 
