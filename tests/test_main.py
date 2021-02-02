@@ -14,5 +14,5 @@ class TestMain(unittest.TestCase):
             main(["--dry", "asdsd"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
