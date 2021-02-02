@@ -7,7 +7,8 @@ import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
 
-from .common import Client, base_parser, sub_parsers
+from .common import Client
+from .parsers import AGP_LB_MONITOR
 
 LB_TIMING = "lb_timing"
 LB_TIMEOUT = "lb_timeout"
@@ -38,12 +39,9 @@ def get(client: Client):
     client.report_metric(metrics)
 
 
-AGP = sub_parsers.add_parser("monitor", add_help=False, parents=[base_parser])
-
-
 def main():
     """Start monitoring"""
-    args, _ = AGP.parse_known_args()
+    args, _ = AGP_LB_MONITOR.parse_known_args()
     setup_logger(LOGGER, "continuous", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
     client = Client(args.target, args.telegraf)
     LOGGER.info("Started monitoring of %s (telegraf at %s)", client.url, client.tgf_address)

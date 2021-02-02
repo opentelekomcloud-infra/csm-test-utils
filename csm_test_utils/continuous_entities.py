@@ -9,7 +9,8 @@ from influx_line_protocol import Metric, MetricCollection
 from ocomone.session import BaseUrlSession
 from ocomone.timer import Timer
 
-from .common import Client, base_parser, sub_parsers
+from .common import Client
+from .parsers import AGP_RDS_MONITOR
 
 
 def _rand_str():
@@ -90,11 +91,8 @@ def check_and_report(client: Client):
     client.report_metric(collection)
 
 
-AGP = sub_parsers.add_parser("rds_monitor", add_help=False, parents=[base_parser])
-
-
 def main():
-    args, _ = AGP.parse_known_args()
+    args, _ = AGP_RDS_MONITOR.parse_known_args()
     _client = Client(args.target, args.telegraf)
     while True:
         Thread(target=check_and_report, args=(_client,)).start()

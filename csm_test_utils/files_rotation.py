@@ -9,15 +9,12 @@ import requests
 from influx_line_protocol import Metric, MetricCollection
 from ocomone.logging import setup_logger
 
-from .common import base_parser, sub_parsers
+from .parsers import AGP_SFS
 
 SFS_COMPARE = "sfs_fcompare"
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
-
-AGP = sub_parsers.add_parser("sfs_compare", add_help=False, parents=[base_parser])
-AGP.add_argument("--mount_point", help="point where NFS mounted", default="/mnt/sfs_share")
 
 
 def report(args):
@@ -75,7 +72,7 @@ def create_file(dd_input="/dev/urandom", base_file="/tmp/base_file.data",
 
 
 def main():
-    args, _ = AGP.parse_known_args()
+    args, _ = AGP_SFS.parse_known_args()
     setup_logger(LOGGER, "sfs_fcompare", log_dir=args.log_dir,
                  log_format="[%(asctime)s] %(message)s")
 

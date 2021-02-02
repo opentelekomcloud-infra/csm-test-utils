@@ -1,30 +1,41 @@
-from csm_test_utils.autoscaling import as_lb_main, as_wh_main
-from csm_test_utils.common import root_parser
-from csm_test_utils.continuous import main as c_main
-from csm_test_utils.continuous_entities import main as rds_main
-from csm_test_utils.dns import dns_lookup_main, host_main
-from csm_test_utils.files_rotation import main as sfs_main
-from csm_test_utils.rds_backup import backup_status, generation
-from csm_test_utils.rebalance_test import main as r_main
+from importlib import import_module
+from inspect import signature
 
-args = root_parser.parse_args()
-if args.test == "monitor":
-    c_main()
-if args.test == "rebalance":
-    r_main(60)
-if args.test == "rds_monitor":
-    rds_main()
-if args.test == "as_monitor":
-    as_wh_main()
-if args.test == "as_load":
-    as_lb_main()
-if args.test == "sfs_compare":
-    sfs_main()
-if args.test == "internal_dns_resolve":
-    dns_lookup_main()
-if args.test == "internal_dns_host_check":
-    host_main()
-if args.test == "rds_backup_monitor":
-    backup_status()
-if args.test == "rds_backup_generate_data":
-    generation()
+from csm_test_utils.parsers import root_parser
+
+ENTRY_POINTS = {
+    "monitor": "csm_test_utils.continuous",
+    "rebalance": "csm_test_utils.rebalance_test",
+    "rds_monitor": "csm_test_utils.continuous_entities",
+    "as_monitor": "csm_test_utils.autoscaling.smn_webhook",
+    "as_load": "csm_test_utils.autoscaling.loadbalancer",
+    "sfs_compare": "csm_test_utils.files_rotation",
+    "internal_dns_resolve": "csm_test_utils.dns.dns_resolving",
+    "internal_dns_host_check": "csm_test_utils.dns.host_check",
+    "rds_backup_monitor": "csm_test_utils.rds.rds_backup",
+    "lb_load": "csm_test_utils.loadbalancer.lb_monitor",
+    "rds_backup_generate_data": "csm_test_utils.rds_backup.generation.cli",
+    "rds_backup_check": "csm_test_utils.rds_backup.backup_check.rds_backup",
+}
+
+
+def _check_main(_main):
+    sig = signature(_main)
+    assert not sig.parameters, "main function should accept no arguments"
+
+
+def main(args=None):
+    """Main csm_test_utils entry point"""
+
+    args, _ = root_parser.parse_known_args(args=args)
+    import_path = ENTRY_POINTS[args.test]
+    module = import_module(import_path)
+    main_fnc = getattr(module, "main")
+    _check_main(main_fnc)
+    if args.dry:
+        return
+    main_fnc()
+
+
+if __name__ == "__main__":
+    main()
