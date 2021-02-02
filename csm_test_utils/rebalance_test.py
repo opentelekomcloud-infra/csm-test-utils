@@ -26,18 +26,16 @@ def _check_timeout(msg, end_time):
         raise TimeoutError(msg)
 
 
-def main(timeout: float):
+def main():
     """Find unavailable node and waits until it won't be used"""
     args, _ = AGP_REBALANCE.parse_known_args()
     client = Client(args.target, args.telegraf)
 
-    end_time = time.monotonic() + 3
-
-    # max number of consecutive successful
-    max_success_count = 20  # requests to consider downtime finished
+    # max number of consecutive successful requests to consider downtime finished
+    max_success_count = 20
 
     success_count = 0
-    end_time = time.monotonic() + timeout
+    end_time = time.monotonic() + float(args.timeout)
     print("Started waiting for loadbalancer to re-balance nodes")
     nodes = set()
 
@@ -65,11 +63,11 @@ def main(timeout: float):
                 success_count += 1
                 nodes.add(server)
                 report(client, ok=True, server=server)
-        _check_timeout(f"No re-balancing is done after {timeout} seconds. "
+        _check_timeout(f"No re-balancing is done after {args.timeout} seconds.\n"
                        f"Nodes: {nodes}{exp_nodes}", end_time)
         time.sleep(0.5)
     print(f"LB rebalanced nodes: ({nodes})")
 
 
 if __name__ == "__main__":
-    main(60)
+    main()

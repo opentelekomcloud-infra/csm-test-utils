@@ -62,6 +62,7 @@ AGP_DNS_RESOLVE.add_argument("--dns_name", help="dns name of server to resolve",
 # LB Rebalance
 AGP_REBALANCE = _subparser("rebalance")
 AGP_REBALANCE.add_argument("--nodes", type=int, default=None, help="Expected number of nodes")
+AGP_REBALANCE.add_argument("--timeout", type=float, default=60.0, help="Rebalance timeout")
 
 # LB Load
 AGP_LB_LOAD = _subparser("lb_load")
