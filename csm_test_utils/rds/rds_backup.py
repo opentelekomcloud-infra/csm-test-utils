@@ -1,15 +1,13 @@
 import datetime
 import json
 import logging
-import sys
-import time
 from datetime import datetime
 
 import requests
 import yaml
 from influx_line_protocol import Metric, MetricCollection
 from ocomone import setup_logger
-from requests import Response, HTTPError, RequestException
+from requests import Response, HTTPError
 
 from ..common import Client, base_parser, sub_parsers
 
