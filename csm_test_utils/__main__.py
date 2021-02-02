@@ -18,20 +18,11 @@ ENTRY_POINTS = {
 
 
 def main(args=None):
-    """Main csm_test_utils entry point.
-
-    Run either `__main__.py` of the package or `main` function
-    """
+    """Main csm_test_utils entry point"""
 
     args, _ = root_parser.parse_known_args(args=args)
     import_path = ENTRY_POINTS[args.test]
     module = import_module(import_path)
-
-    if hasattr(module, "__main__"):
-        if args.dry:
-            return
-        import_module(f"{module}.__main__")
-
     main_fnc = getattr(module, "main")
     if args.dry:
         return
