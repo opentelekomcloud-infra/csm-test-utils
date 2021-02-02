@@ -2,7 +2,7 @@ from importlib import import_module
 
 from csm_test_utils.parsers import root_parser
 
-entry_points = {
+ENTRY_POINTS = {
     "monitor": "csm_test_utils.continuous",
     "rebalance": "csm_test_utils.rebalance_test",
     "rds_monitor": "csm_test_utils.continuous_entities",
@@ -17,14 +17,14 @@ entry_points = {
 }
 
 
-def main():
+def main(args=None):
     """Main csm_test_utils entry point.
 
     Run either `__main__.py` of the package or `main` function
     """
 
-    args, _ = root_parser.parse_known_args()
-    import_path = entry_points[args.test]
+    args, _ = root_parser.parse_known_args(args=args)
+    import_path = ENTRY_POINTS[args.test]
     module = import_module(import_path)
 
     if hasattr(module, "__main__"):
