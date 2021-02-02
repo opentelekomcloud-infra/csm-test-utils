@@ -16,13 +16,12 @@ AS_RESULT = "as_result"
 @app.route("/smn", methods=["POST"])
 @app.route("/smn/", methods=["POST"])
 def smn():
-    if request.method == "POST":
-        response = request.get_json()
-        if "subscribe_url" in response:
-            requests.get(response["subscribe_url"])
-        else:
-            report(json.loads(response["message"]))
-        return jsonify(response)
+    response = request.get_json()
+    if "subscribe_url" in response:
+        requests.get(response["subscribe_url"])
+    else:
+        report(json.loads(response["message"]))
+    return jsonify(response)
 
 
 def report(response_body):
@@ -44,7 +43,7 @@ args, _ = AGP.parse_known_args()
 
 
 def main():
-    Thread(target=app.run, kwargs={'port': args.port}).start()
+    Thread(target=app.run, kwargs={"port": args.port}).start()
 
 
 if __name__ == "__main__":

@@ -1,11 +1,12 @@
 import logging
 import sys
 import time
+from urllib.error import HTTPError
 
 import requests
 from influx_line_protocol import Metric
 from ocomone.logging import setup_logger
-from urllib.error import HTTPError
+
 from ..common import Client, base_parser, sub_parsers
 
 AS_LOADBALANCER = "as_loadbalancer"
@@ -29,13 +30,14 @@ def report(client: Client):
             influx_row.add_tag("host", "scn4")
             influx_row.add_tag("reason", "fail")
             influx_row.add_value("elapsed", target_req.elapsed.microseconds / 1000)
-    except (IOError, HTTPError) as Error:
+    except (IOError, HTTPError) as error:
         influx_row = Metric(CSM_EXCEPTION)
         influx_row.add_tag("Reporter", AS_LOADBALANCER)
         influx_row.add_tag("Status", "Loadbalancer Unavailable")
-        influx_row.add_value("Value", Error)
-    except Exception as Ex:
-        return LOGGER.exception(Ex)
+        influx_row.add_value("Value", error)
+    except Exception:  # pylint: disable=broad-except
+        LOGGER.exception("Exception occured while metrics reporting")
+        return
     client.report_metric(influx_row)
 
 AGP = sub_parsers.add_parser("as_load", add_help=False, parents=[base_parser])
@@ -44,9 +46,10 @@ AGP = sub_parsers.add_parser("as_load", add_help=False, parents=[base_parser])
 def main():
     """Start monitoring loadbalancer"""
     args, _ = AGP.parse_known_args()
-    setup_logger(LOGGER, "lb_continuous", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
+    setup_logger(LOGGER, "lb_continuous", log_dir=args.log_dir,\
+                                            log_format="[%(asctime)s] %(message)s")
     client = Client(args.target, args.telegraf)
-    LOGGER.info(f"Started monitoring of {client.url} (telegraf at {client.tgf_address})")
+    LOGGER.info("Started monitoring of %d (telegraf at %d)", client.url, client.tgf_address)
     while True:
         try:
             report(client)
