@@ -55,7 +55,7 @@ def main():
             report(client)
             time.sleep(10)
         except KeyboardInterrupt:
-            LOGGER.info("Monitoring Stopped")
+            LOGGER.info("Monitoring \"as_load\" Stopped")
             sys.exit(0)
 
 
