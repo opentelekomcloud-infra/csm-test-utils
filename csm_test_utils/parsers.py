@@ -60,6 +60,8 @@ AGP_DNS_RESOLVE = _subparser("internal_dns_resolve")
 AGP_DNS_RESOLVE.add_argument("--dns_name", help="dns name of server to resolve", type=str)
 
 # LB Rebalance
-
 AGP_REBALANCE = _subparser("rebalance")
 AGP_REBALANCE.add_argument("--nodes", type=int, default=None, help="Expected number of nodes")
+
+# LB Load
+AGP_LB_LOAD = _subparser("lb_load")
