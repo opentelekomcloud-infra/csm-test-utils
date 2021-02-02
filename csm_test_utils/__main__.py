@@ -1,4 +1,5 @@
 from importlib import import_module
+from inspect import signature
 
 from csm_test_utils.parsers import root_parser
 
@@ -14,7 +15,13 @@ ENTRY_POINTS = {
     "rds_backup_monitor": "csm_test_utils.rds.rds_backup",
     "lb_load": "csm_test_utils.loadbalancer.lb_monitor",
     "rds_backup_generate_data": "csm_test_utils.rds_backup.generation.cli",
+    "rds_backup_check": "csm_test_utils.rds_backup.backup_check.rds_backup",
 }
+
+
+def _check_main(_main):
+    sig = signature(_main)
+    assert not sig.parameters, "main function should accept no arguments"
 
 
 def main(args=None):
@@ -24,6 +31,7 @@ def main(args=None):
     import_path = ENTRY_POINTS[args.test]
     module = import_module(import_path)
     main_fnc = getattr(module, "main")
+    _check_main(main_fnc)
     if args.dry:
         return
     main_fnc()

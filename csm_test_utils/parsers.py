@@ -66,3 +66,23 @@ AGP_REBALANCE.add_argument("--timeout", type=float, default=60.0, help="Rebalanc
 
 # LB Load
 AGP_LB_LOAD = _subparser("lb_load")
+
+# RDS backup generate data
+AGP_RDS_GENERATE = _subparser("rds_backup_generate_data")
+AGP_RDS_GENERATE.add_argument("--run_option", dest="run_option",
+                              choices=["pg2", "sqla"])
+AGP_RDS_GENERATE.add_argument("--source")
+AGP_RDS_GENERATE.add_argument("--host")
+AGP_RDS_GENERATE.add_argument("--port")
+AGP_RDS_GENERATE.add_argument("--database", "-db", default="entities")
+AGP_RDS_GENERATE.add_argument("--username", "-user")
+AGP_RDS_GENERATE.add_argument("--password", "-pass")
+AGP_RDS_GENERATE.add_argument("--drivername", default="postgresql+psycopg2")
+
+# RDS backup check
+
+AGP_BACKUP_CHECK = _subparser("rds_backup_check")
+AGP_BACKUP_CHECK.add_argument("--instance_id", help="RDS instance ID")
+AGP_BACKUP_CHECK.add_argument("--cloud_config", help="Clouds config file")
+AGP_BACKUP_CHECK.add_argument("--cloud_name", help="Name of cloud")
+AGP_BACKUP_CHECK.add_argument("--endpoint", help="Endpoint")

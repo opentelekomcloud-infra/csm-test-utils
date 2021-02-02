@@ -7,7 +7,8 @@ from influx_line_protocol import Metric, MetricCollection
 from ocomone import setup_logger
 from requests import Response
 
-from csm_test_utils.common import Client, base_parser, sub_parsers
+from csm_test_utils.common import Client
+from csm_test_utils.parsers import AGP_BACKUP_CHECK
 
 API_VERSION = 'v3'
 RDS_BACKUP = 'rds_backup_monitor'
@@ -108,16 +109,9 @@ def report(client: Client, endpoint: str, token: str, project_id: str, **request
         client.report_metric(collection)
 
 
-AGP = sub_parsers.add_parser(RDS_BACKUP, add_help=False, parents=[base_parser])
-AGP.add_argument('--instance_id', help='RDS instance ID')
-AGP.add_argument('--cloud_config', help='Clouds config file')
-AGP.add_argument('--cloud_name', help='Name of cloud')
-AGP.add_argument('--endpoint', help='Endpoint')
-
-
 def main():
     """Main function for """
-    args, _ = AGP.parse_known_args()
+    args, _ = AGP_BACKUP_CHECK.parse_known_args()
     request_params = {'instance_id': args.instance_id, 'backup_type': 'auto'}
     client = Client(args.target, args.telegraf)
     setup_logger(LOGGER, 'rds_backup_monitor', log_dir=args.log_dir,
