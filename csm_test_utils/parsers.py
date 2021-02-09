@@ -2,17 +2,31 @@
 import os
 from argparse import ArgumentParser
 
+__tgf_default = os.getenv("TGF_ADDRESS", "")
+__apimon_socket = os.getenv("APIMON_PROFILER_MESSAGE_SOCKET", "")
+
 _base_parser = ArgumentParser(prog="csm_test_utils", description="Multi-purpose test script")
 """Base for all parsers"""
-
 _base_parser.add_argument("--target", help="Load balancer address")
-__tgf_default = os.getenv("TGF_ADDRESS", "")
-_base_parser.add_argument("--telegraf",
-                          help=f"Address of telegraf server for reporting. "
-                               f"Default is taken from TGF_ADDRESS variable ('{__tgf_default}')",
-                          default=__tgf_default)
-_base_parser.add_argument("--log-dir", "-l", help="Directory to write log file to.",
-                          default=".")
+_base_parser.add_argument(
+    "--telegraf",
+    help=f"Address of telegraf server for reporting. "
+         f"Default is taken from TGF_ADDRESS variable ('{__tgf_default}')",
+    default=__tgf_default
+)
+_base_parser.add_argument(
+    "--socket",
+    help=f"Address of AF_UNIX type socket for reporting. "
+         f"Default is taken from APIMON_PROFILER_MESSAGE_SOCKET"
+         f" variable ('{__apimon_socket}')",
+    default=__apimon_socket
+)
+_base_parser.add_argument(
+    "--log-dir",
+    "-l",
+    help="Directory to write log file to.",
+    default="."
+)
 
 root_parser = ArgumentParser(parents=[_base_parser], add_help=False)
 """Root `csm_test_utils` parser"""
@@ -80,7 +94,6 @@ AGP_RDS_GENERATE.add_argument("--password", "-pass")
 AGP_RDS_GENERATE.add_argument("--drivername", default="postgresql+psycopg2")
 
 # RDS backup check
-
 AGP_BACKUP_CHECK = _subparser("rds_backup_check")
 AGP_BACKUP_CHECK.add_argument("--instance_id", help="RDS instance ID")
 AGP_BACKUP_CHECK.add_argument("--cloud_config", help="Clouds config file")
