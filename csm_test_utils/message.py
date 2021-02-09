@@ -1,5 +1,10 @@
 import datetime
 import json
+import logging
+import socket
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
 
 
 class Base(dict):
@@ -7,7 +12,8 @@ class Base(dict):
 
     def __init__(
         self, name: str,
-        environment: str, zone: str,
+        environment: str,
+        zone: str,
         timestamp: str = None
     ):
         super(Base, self).__init__()
@@ -39,7 +45,8 @@ class Metric(Base):
         self,
         name: str, value: int,
         metric_type: str,
-        environment: str = None, zone: str = None,
+        environment: str = None,
+        zone: str = None,
         **kwargs: dict
     ):
         super(Metric, self).__init__(
@@ -63,3 +70,20 @@ def get_message(msg):
     typ = msg.pop('__type')
     if typ == 'metric':
         return Metric(**msg)
+
+
+def push_metric(data: Metric, message_socket_address=None):
+    """push metrics to socket"""
+    if message_socket_address:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as _socket:
+            try:
+                _socket.connect(message_socket_address)
+                msg = '%s\n' % data.serialize()
+                _socket.sendall(msg.encode('utf8'))
+                return 'success'
+            except socket.error as ex:
+                LOGGER.exception('Error establising connection to socket')
+                raise
+            except Exception as e:
+                LOGGER.exception('Error writing message to socket')
+                raise
