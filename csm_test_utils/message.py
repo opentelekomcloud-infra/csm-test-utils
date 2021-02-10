@@ -57,7 +57,6 @@ class Metric(Base):
         )
         self['__type'] = 'metric'
         self['metric_type'] = kwargs.get('metric_type', 'ms')
-        kwargs['metric_attrs'].pop('metric_type')
         self['value'] = value
         self.update(**kwargs)
 
