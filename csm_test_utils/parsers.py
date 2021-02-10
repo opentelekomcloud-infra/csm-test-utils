@@ -21,8 +21,8 @@ _base_parser.add_argument(
          f" variable ('{__apimon_socket}')",
     default=__apimon_socket
 )
-_base_parser.add_argument("--environment", default='prod')
-_base_parser.add_argument("--zone", default='eu-de')
+_base_parser.add_argument("--environment", default="prod")
+_base_parser.add_argument("--zone", default="eu-de")
 _base_parser.add_argument(
     "--log-dir",
     "-l",

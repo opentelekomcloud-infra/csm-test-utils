@@ -30,7 +30,7 @@ class Base(dict):
         try:
             return json.dumps(self, separators=(',', ':'))
         except json.JSONDecodeError:
-            return
+            return None
 
     def __bytes__(self) -> bytes:
         """Returns bytes interpretation of data"""
@@ -83,7 +83,7 @@ def push_metric(data: Metric, message_socket_address=None):
                 return 'success'
             except socket.error as ex:
                 LOGGER.exception('Error establishing connection to socket')
-                raise
+                raise ex
             except Exception as e:
                 LOGGER.exception('Error writing message to socket')
-                raise
+                raise e

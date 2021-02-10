@@ -8,8 +8,8 @@ from ocomone.logging import setup_logger
 from ..message import push_metric, Metric
 from ..parsers import AGP_LB_LOAD
 
-LB_TIMING = "csm_lb_timings"
-LB_TIMEOUT = "csm_lb_timeout"
+LB_TIMING = 'csm_lb_timings'
+LB_TIMEOUT = 'csm_lb_timeout'
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -23,14 +23,14 @@ INSTANCES_AZ = {
 
 def main():
     args, _ = AGP_LB_LOAD.parse_known_args()
-    setup_logger(LOGGER, "lb_load", log_dir=args.log_dir, log_format="[%(asctime)s] %(message)s")
+    setup_logger(LOGGER, 'lb_load', log_dir=args.log_dir, log_format='[%(asctime)s] %(message)s')
     timeout = 20
     metrics = []
     for req in range(9):
         try:
-            res = requests.get(args.target, headers={"Connection": "close"}, timeout=timeout)
+            res = requests.get(args.target, headers={'Connection': 'close'}, timeout=timeout)
         except requests.Timeout as ex:
-            LOGGER.exception("Timeout sending request to LB")
+            LOGGER.exception('Timeout sending request to LB')
             metrics.append(Metric(
                 environment=args.environment,
                 zone=args.zone,
@@ -39,7 +39,7 @@ def main():
                 metric_type='ms',
                 metric_attrs={
                     'client': socket.gethostname(),
-                    "exception": ex,
+                    'exception': ex,
                 })
             )
         else:
@@ -51,8 +51,8 @@ def main():
                 metric_type='ms',
                 metric_attrs={
                     'client': socket.gethostname(),
-                    'server': res.headers["Server"],
-                    'az': INSTANCES_AZ.get(res.headers["Server"]),
+                    'server': res.headers['Server'],
+                    'az': INSTANCES_AZ.get(res.headers['Server']),
                 })
             )
         sleep(2)
@@ -60,5 +60,5 @@ def main():
         push_metric(metric, args.socket)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
