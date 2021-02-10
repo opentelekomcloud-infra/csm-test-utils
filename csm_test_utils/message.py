@@ -11,7 +11,8 @@ class Base(dict):
     """Base metric class"""
 
     def __init__(
-        self, name: str,
+        self,
+        name: str,
         environment: str,
         zone: str,
         timestamp: str = None
@@ -43,8 +44,8 @@ class Metric(Base):
 
     def __init__(
         self,
-        name: str, value: int,
-        metric_type: str,
+        name: str,
+        value: int,
         environment: str = None,
         zone: str = None,
         **kwargs: dict
@@ -55,7 +56,8 @@ class Metric(Base):
             zone=zone,
         )
         self['__type'] = 'metric'
-        self['metric_type'] = metric_type
+        self['metric_type'] = kwargs.get('metric_type', 'ms')
+        kwargs['metric_attrs'].pop('metric_type')
         self['value'] = value
         self.update(**kwargs)
 
@@ -73,7 +75,7 @@ def get_message(msg):
     return None
 
 
-def push_metric(data: Metric, message_socket_address=None):
+def push_metric(data: Metric, message_socket_address):
     """push metrics to socket"""
     if message_socket_address:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as _socket:

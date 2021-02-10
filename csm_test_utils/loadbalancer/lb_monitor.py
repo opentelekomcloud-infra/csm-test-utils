@@ -36,8 +36,9 @@ def main():
                 zone=args.zone,
                 name=LB_TIMEOUT,
                 value=timeout * 1000,
-                metric_type='ms',
+
                 metric_attrs={
+                    'metric_type': 'ms',
                     'client': socket.gethostname(),
                     'exception': ex,
                 })
@@ -48,8 +49,8 @@ def main():
                 zone=args.zone,
                 name=LB_TIMING,
                 value=int(res.elapsed.microseconds / 1000),
-                metric_type='ms',
                 metric_attrs={
+                    'metric_type': 'ms',
                     'client': socket.gethostname(),
                     'server': res.headers['Server'],
                     'az': INSTANCES_AZ.get(res.headers['Server']),
