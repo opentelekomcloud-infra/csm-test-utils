@@ -36,7 +36,6 @@ def main():
                 zone=args.zone,
                 name=LB_TIMEOUT,
                 value=timeout * 1000,
-
                 metric_attrs={
                     'metric_type': 'ms',
                     'client': socket.gethostname(),
