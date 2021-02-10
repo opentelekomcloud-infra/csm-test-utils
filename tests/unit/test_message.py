@@ -10,8 +10,8 @@ test_metrics = [
         zone='eu-de',
         name='lb_load',
         value=25,
-        metric_type='ms',
         metric_attrs={
+            'metric_type': 'ms',
             'server': 'instance_0',
             'az': 'eu-de-01',
             'rc': 0
