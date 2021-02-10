@@ -56,8 +56,9 @@ def main():
                 })
             )
         sleep(2)
-    for metric in metrics:
-        push_metric(metric, args.socket)
+    if args.socket:
+        for metric in metrics:
+            push_metric(metric, args.socket)
 
 
 if __name__ == '__main__':
