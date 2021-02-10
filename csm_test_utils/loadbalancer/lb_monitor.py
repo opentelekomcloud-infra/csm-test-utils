@@ -26,7 +26,7 @@ def main():
     setup_logger(LOGGER, 'lb_load', log_dir=args.log_dir, log_format='[%(asctime)s] %(message)s')
     timeout = 20
     metrics = []
-    for req in range(9):
+    for _ in range(9):
         try:
             res = requests.get(args.target, headers={'Connection': 'close'}, timeout=timeout)
         except requests.Timeout as ex:

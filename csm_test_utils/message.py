@@ -16,7 +16,7 @@ class Base(dict):
         zone: str,
         timestamp: str = None
     ):
-        super(Base, self).__init__()
+        super().__init__()
         self['name'] = name
         self['environment'] = environment
         self['zone'] = zone
@@ -25,12 +25,12 @@ class Base(dict):
         else:
             self['timestamp'] = datetime.datetime.now().isoformat()
 
-    def serialize(self):
+    def serialize(self) -> str:
         """Serialize data as json string"""
         try:
             return json.dumps(self, separators=(',', ':'))
-        except json.JSONDecodeError:
-            return None
+        except json.JSONDecodeError as err:
+            return err.msg
 
     def __bytes__(self) -> bytes:
         """Returns bytes interpretation of data"""
@@ -49,7 +49,7 @@ class Metric(Base):
         zone: str = None,
         **kwargs: dict
     ):
-        super(Metric, self).__init__(
+        super().__init__(
             name=name,
             environment=environment,
             zone=zone,
