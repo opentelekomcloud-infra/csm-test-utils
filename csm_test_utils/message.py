@@ -70,6 +70,7 @@ def get_message(msg):
     typ = msg.pop('__type')
     if typ == 'metric':
         return Metric(**msg)
+    return None
 
 
 def push_metric(data: Metric, message_socket_address=None):
@@ -87,3 +88,4 @@ def push_metric(data: Metric, message_socket_address=None):
             except Exception as ex:
                 LOGGER.exception('Error writing message to socket')
                 raise ex
+    return None
