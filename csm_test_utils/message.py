@@ -76,17 +76,15 @@ def get_message(msg):
 
 def push_metric(data: Metric, message_socket_address):
     """push metrics to socket"""
-    if message_socket_address:
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as _socket:
-            try:
-                _socket.connect(message_socket_address)
-                msg = '%s\n' % data.serialize()
-                _socket.sendall(msg.encode('utf8'))
-                return 'success'
-            except socket.error as err:
-                LOGGER.exception('Error establishing connection to socket')
-                raise err
-            except Exception as ex:
-                LOGGER.exception('Error writing message to socket')
-                raise ex
-    return None
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as _socket:
+        try:
+            _socket.connect(message_socket_address)
+            msg = '%s\n' % data.serialize()
+            _socket.sendall(msg.encode('utf8'))
+            return 'success'
+        except socket.error as err:
+            LOGGER.exception('Error establishing connection to socket')
+            raise err
+        except Exception as ex:
+            LOGGER.exception('Error writing message to socket')
+            raise ex
