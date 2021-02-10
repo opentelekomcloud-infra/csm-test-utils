@@ -82,7 +82,7 @@ def push_metric(data: Metric, message_socket_address=None):
                 _socket.sendall(msg.encode('utf8'))
                 return 'success'
             except socket.error as ex:
-                LOGGER.exception('Error establising connection to socket')
+                LOGGER.exception('Error establishing connection to socket')
                 raise
             except Exception as e:
                 LOGGER.exception('Error writing message to socket')

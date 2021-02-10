@@ -21,6 +21,8 @@ _base_parser.add_argument(
          f" variable ('{__apimon_socket}')",
     default=__apimon_socket
 )
+_base_parser.add_argument("--environment", default='prod')
+_base_parser.add_argument("--zone", default='eu-de')
 _base_parser.add_argument(
     "--log-dir",
     "-l",
@@ -46,7 +48,6 @@ AGP_AS_MONITOR.add_argument("--port", help="port to be listened", default=23456,
 
 # AS LB
 AGP_AS_LB = _subparser("as_load")
-
 # LB monitor
 AGP_LB_MONITOR = _subparser("monitor")
 
