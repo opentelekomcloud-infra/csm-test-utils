@@ -1,5 +1,4 @@
 import logging
-import socket
 from time import sleep
 
 import requests
@@ -26,7 +25,7 @@ def main():
     setup_logger(LOGGER, 'lb_load', log_dir=args.log_dir, log_format='[%(asctime)s] %(message)s')
     timeout = 20
     metrics = []
-    for _ in range(9):
+    for _ in range(15):
         try:
             res = requests.get(args.target, headers={'Connection': 'close'}, timeout=timeout)
         except requests.Timeout as ex:
@@ -36,11 +35,8 @@ def main():
                 zone=args.zone,
                 name=LB_TIMEOUT,
                 value=timeout * 1000,
-                metric_attrs={
-                    'metric_type': 'ms',
-                    'client': socket.gethostname(),
-                    'exception': ex,
-                })
+                metric_type='ms',
+                az='Timeout')
             )
         else:
             metrics.append(Metric(
@@ -48,18 +44,13 @@ def main():
                 zone=args.zone,
                 name=LB_TIMING,
                 value=int(res.elapsed.microseconds / 1000),
-                metric_attrs={
-                    'metric_type': 'ms',
-                    'client': socket.gethostname(),
-                    'server': res.headers['Server'],
-                    'az': INSTANCES_AZ.get(res.headers['Server']),
-                })
+                metric_type='ms',
+                az=INSTANCES_AZ.get(res.headers['Server']))
             )
-        sleep(2)
-    if args.socket:
-        for metric in metrics:
-            push_metric(metric, args.socket)
+            sleep(1)
+        if args.socket:
+            for metric in metrics:
+                push_metric(metric, args.socket)
 
-
-if __name__ == '__main__':
-    main()
+    if __name__ == '__main__':
+        main()

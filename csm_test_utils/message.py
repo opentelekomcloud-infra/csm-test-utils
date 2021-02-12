@@ -48,7 +48,7 @@ class Metric(Base):
         value: int,
         environment: str = None,
         zone: str = None,
-        **kwargs: dict
+        **kwargs
     ):
         super().__init__(
             name=name,

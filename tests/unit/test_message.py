@@ -10,12 +10,8 @@ test_metrics = [
         zone='eu-de',
         name='lb_load',
         value=25,
-        metric_attrs={
-            'metric_type': 'ms',
-            'server': 'instance_0',
-            'az': 'eu-de-01',
-            'rc': 0
-        }
+        metric_type='ms',
+        az='eu-de-01',
     )
 ]
 
@@ -28,9 +24,8 @@ class TestMessage(unittest.TestCase):
 
     def test_metric_deserialize(self):
         metric = '{"name":"lb_load","environment":"prod",' \
-                 '"zone":"eu-de","timestamp":"2021-02-08T14:15:27.578578",' \
-                 '"__type":"metric","metric_type":"ms","value":25,' \
-                 '"metric_attrs":{"server":"instance_0","az":"eu-de-01","rc":0}}'
+                 '"zone":"eu-de","timestamp":"2021-02-12T11:27:11.157452",' \
+                 '"__type":"metric","metric_type":"ms","value":25,"az":"eu-de-01"}'
         instance = get_message(metric)
 
         assert isinstance(instance, message.Metric), 'not deserialized'
