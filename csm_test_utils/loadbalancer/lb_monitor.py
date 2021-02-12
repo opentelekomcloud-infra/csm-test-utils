@@ -43,7 +43,7 @@ def main():
                 metric_type='ms',
                 az=INSTANCES_AZ.get(res.headers['Server']))
             )
-    sleep(1)
+        sleep(1)
     if args.socket:
         for metric in metrics:
             push_metric(metric, args.socket)
