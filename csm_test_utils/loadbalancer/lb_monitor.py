@@ -31,8 +31,6 @@ def main():
         except requests.Timeout as ex:
             LOGGER.exception('Timeout sending request to LB')
             metrics.append(Metric(
-                environment=args.environment,
-                zone=args.zone,
                 name=LB_TIMEOUT,
                 value=timeout * 1000,
                 metric_type='ms',
@@ -40,17 +38,15 @@ def main():
             )
         else:
             metrics.append(Metric(
-                environment=args.environment,
-                zone=args.zone,
                 name=LB_TIMING,
                 value=int(res.elapsed.microseconds / 1000),
                 metric_type='ms',
                 az=INSTANCES_AZ.get(res.headers['Server']))
             )
-            sleep(1)
-        if args.socket:
-            for metric in metrics:
-                push_metric(metric, args.socket)
+    sleep(1)
+    if args.socket:
+        for metric in metrics:
+            push_metric(metric, args.socket)
 
-    if __name__ == '__main__':
-        main()
+if __name__ == '__main__':
+    main()
