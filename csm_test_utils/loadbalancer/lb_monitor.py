@@ -28,7 +28,7 @@ def main():
     for _ in range(15):
         try:
             res = requests.get(args.target, headers={'Connection': 'close'}, timeout=timeout)
-        except requests.Timeout as ex:
+        except requests.Timeout:
             LOGGER.exception('Timeout sending request to LB')
             metrics.append(Metric(
                 name=LB_TIMEOUT,
