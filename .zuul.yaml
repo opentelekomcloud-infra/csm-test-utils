@@ -1,7 +1,7 @@
 - job:
     name: tox-cover-docker
     parent: tox-cover
-    nodeset: debian-buster
+    nodeset: debian-bullseye
     pre-run: ./tests/docker/pre.yaml
 
 - project:
