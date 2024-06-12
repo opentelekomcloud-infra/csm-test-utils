@@ -65,7 +65,7 @@ def get_message(msg):
     """Get metric instance from dictionary or string"""
     if not isinstance(msg, dict):
         try:
-            msg = json.loads(msg, encoding='utf-8')
+            msg = json.loads(msg)
         except json.JSONDecodeError:
             return None
     typ = msg.pop('__type')

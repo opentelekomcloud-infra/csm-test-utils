@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy import BigInteger, Column, Text
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 

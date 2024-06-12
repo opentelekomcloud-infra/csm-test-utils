@@ -20,7 +20,7 @@ class AlchemyDB(BaseDB):
 
     def __init__(self, connection):
         super().__init__(connection)
-        self.engine = create_engine(url.make_url(url.URL(**connection)), echo=False)
+        self.engine = create_engine(url.make_url(url.URL(**connection, query={})), echo=False)
 
     def _execute_sql(self, sql_query):
         """Execute sql command which depends on db dialect"""
