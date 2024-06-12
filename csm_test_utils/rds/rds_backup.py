@@ -25,7 +25,7 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
 
     Token and project_id are returned as a string
     """
-    with open(cloud_config) as clouds_yaml:
+    with open(cloud_config, encoding="utf-8") as clouds_yaml:
         data = yaml.safe_load(clouds_yaml)
     auth_data = data["clouds"][cloud_name]["auth"]
     request_headers = {"Content-Type": CONTENT_TYPE}
@@ -51,7 +51,7 @@ def get_auth_token(endpoint, cloud_config, cloud_name):
         }
     })
     url = "/".join([endpoint, API_VERSION, "auth/tokens"])
-    response = requests.post(url=url, data=request_body, headers=request_headers)
+    response = requests.post(url=url, data=request_body, headers=request_headers, timeout=30)
     token = response.headers.get("X-Subject-Token")
     project_id = response.json()["token"]["project"]["id"]
     return token, project_id
@@ -61,7 +61,7 @@ def get_rds_backup_info(endpoint: str, token: str, project_id: str, **request_pa
     """Get full information about RDS backups"""
     url = "/".join([endpoint, API_VERSION, project_id, "backups?"])
     request_headers = {"Content-Type": CONTENT_TYPE, "X-Auth-Token": token}
-    response = requests.get(url=url, params=request_params, headers=request_headers)
+    response = requests.get(url=url, params=request_params, headers=request_headers, timeout=30)
     return response
 
 

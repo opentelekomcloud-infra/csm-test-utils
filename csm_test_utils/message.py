@@ -36,7 +36,7 @@ class Base(dict):
     def __bytes__(self) -> bytes:
         """Returns bytes interpretation of data"""
         data = self.serialize()
-        return ('%s\n' % data).encode('utf8')
+        return f"{data}\n')".encode('utf8')
 
 
 class Metric(Base):
@@ -79,7 +79,7 @@ def push_metric(data: Metric, message_socket_address):
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as _socket:
         try:
             _socket.connect(message_socket_address)
-            msg = '%s\n' % data.serialize()
+            msg = f'{data.serialize()}\n'
             _socket.sendall(msg.encode('utf8'))
             return 'success'
         except socket.error as err:

@@ -19,7 +19,7 @@ LOGGER.setLevel(logging.DEBUG)
 def report(client: Client):
     """Send request and write metrics to telegraf"""
     try:
-        target_req = requests.get(client.url, headers={"Connection": "close"})
+        target_req = requests.get(client.url, headers={"Connection": "close"}, timeout=30)
         influx_row = Metric(AS_LOADBALANCER)
         if target_req.status_code == 200:
             influx_row.add_tag("state", "connected")

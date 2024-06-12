@@ -63,7 +63,7 @@ class Pg2DB(BaseDB):
     def run_test(self, src_file: str):
         logging_configuration()
         logging.info('Script starts')
-        with open(src_file) as data_file:
+        with open(src_file, encoding='utf-8') as data_file:
             data = yaml.safe_load(data_file)
         count = data['record_count']
         range_start = 0
