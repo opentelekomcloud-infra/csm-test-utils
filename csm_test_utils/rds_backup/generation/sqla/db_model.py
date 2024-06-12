@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy import BigInteger, Column, Text
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -18,4 +18,4 @@ class TestRdsTable(Base):  # pylint: disable=too-few-public-methods
         self.content = content
 
     def __repr__(self):
-        return "<TestRds('%s','%s')>" % (self.id, self.content)
+        return f"<TestRds('{self.id}','{self.content}')>"

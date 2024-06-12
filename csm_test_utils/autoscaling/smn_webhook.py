@@ -18,7 +18,7 @@ AS_RESULT = "as_result"
 def smn():
     response = request.get_json()
     if "subscribe_url" in response:
-        requests.get(response["subscribe_url"])
+        requests.get(response["subscribe_url"], timeout=30)
     else:
         report(json.loads(response["message"]))
     return jsonify(response)

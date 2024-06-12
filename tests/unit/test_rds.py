@@ -13,7 +13,7 @@ from docker.models.containers import Container
 from csm_test_utils.parsers import AGP_RDS_GENERATE
 from csm_test_utils.rds_backup.generation.cli import DB_DICT, get_connection_dict
 
-POSTGRES_IMAGE = 'postgres:10'
+POSTGRES_IMAGE = 'postgres:16'
 POSTGRES_ADDRESS = 'postgres:5432'
 DB_CONFIG_FILE = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'rds_test_config.yaml'))

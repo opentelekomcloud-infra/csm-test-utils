@@ -5,7 +5,7 @@ from contextlib import closing
 
 import yaml
 from psycopg2 import Error
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import url
 
 from csm_test_utils.rds_backup.generation.base import BaseDB, logging_configuration
@@ -20,13 +20,15 @@ class AlchemyDB(BaseDB):
 
     def __init__(self, connection):
         super().__init__(connection)
-        self.engine = create_engine(url.make_url(url.URL(**connection)), echo=False)
+        query_params = {}
+        uri = url.URL(**connection, query=query_params)
+        self.engine = create_engine(url.make_url(uri), echo=False)
 
     def _execute_sql(self, sql_query):
         """Execute sql command which depends on db dialect"""
         try:
             with closing(self.engine.connect()) as connection:
-                result = connection.execute(sql_query).fetchall()
+                result = connection.execute(text(sql_query)).fetchall()
         except Error:
             logging.exception('Error occurred')
         return result
@@ -38,7 +40,7 @@ class AlchemyDB(BaseDB):
         logging_configuration()
         logging.info('Scripts starts')
 
-        with open(src_file) as data_file:
+        with open(src_file, encoding='utf-8') as data_file:
             data = yaml.safe_load(data_file)
         content_str = _random_str(data['symbol_count'])
         session = get_session(self.engine)
